@@ -11,6 +11,7 @@
     <modules>
         <module>spring-mvc-default</module>
         <module>spring-mvc-yaml-log4j</module>
+        <module>spring-test-app</module>
     </modules>
 
 </project>
