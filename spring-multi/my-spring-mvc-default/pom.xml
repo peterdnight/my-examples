@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.samples</groupId>
-	<artifactId>spring-mvc-default</artifactId>
+	<artifactId>my-spring-mvc-default</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Demo project for Spring Boot</description>
 

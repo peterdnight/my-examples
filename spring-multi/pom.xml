@@ -9,9 +9,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>spring-mvc-default</module>
-        <module>spring-mvc-yaml-log4j</module>
-        <module>spring-test-app</module>
+        <module>my-spring-mvc-default</module>
+        <module>my-spring-mvc-yaml-log4j</module>
+        <module>my-spring-test-app</module>
     </modules>
 
 </project>
