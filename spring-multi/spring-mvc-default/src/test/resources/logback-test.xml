@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		
+			<!-- %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %n%red(%caller{1}) \t %message %n %n -->
+			<!-- %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %red(%class{40}.%method:%line) %n\t %message %n %n -->
+			
+			<!--  %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) \(%file:%line\) %red(%class{40}.%method) %n==> %message %n %n -->
+			<pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level \(%file:%line\) %class{40}.%method %n==> %message %n %n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+	<logger name="org.springframework" level="warn" />
+	<logger name="org.springframework.boot.context.config.ConfigFileApplicationListener" level="debug" />
+	<logger name="org.springframework.boot.autoconfigure.logging" level="info" />
+	<logger name="org.springframework.security.ldap" level="debug" />
+	<logger name="org.springframework.security" level="info" />
+	<logger name="org.springframework.security.web.authentication" level="debug" />
+
+</configuration>
