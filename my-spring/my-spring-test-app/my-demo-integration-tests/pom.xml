@@ -22,10 +22,11 @@
 
 		<dependency>
 			<groupId>org.samples</groupId>
-			<artifactId>demo-app</artifactId>
+			<artifactId>my-demo-app</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
-		
+
+
 
 		<!-- dev ops -->
 		<dependency>
