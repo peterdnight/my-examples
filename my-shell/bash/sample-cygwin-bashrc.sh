@@ -1,4 +1,8 @@
 
+#
+#  Copy to c:\tools\cygwin\home\..
+#
+
 function prompt_command {
      #   How many characters of the $PWD should be kept
      local pwd_length=32
@@ -22,7 +26,6 @@ export PROMPT_COMMAND=prompt_command
 
 
 # aliases
-export WIN_HOME="/mnt/c/Users/peter/"
 export WIN_HOME="/mnt/c/Users/peter/"
 alias cdw="cd $WIN_HOME"
 alias s='source ~/.bashrc'
