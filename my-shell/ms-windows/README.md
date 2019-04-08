@@ -34,7 +34,6 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/in
 ```
 choco install --yes notepadplusplus 
 choco install --yes 7zip
-choco install --yes jdk8
 choco install --yes treesizefree
 choco install --yes virtualbox
 choco install --yes sysinternals
@@ -47,6 +46,9 @@ choco install --yes git wget rsync bind-toolsonly
 choco list --local-only
 choco uninstall <...>
 choco update <...>
+
+
+# choco install --yes jdk8
 ```
 
 

@@ -26,7 +26,7 @@ export PROMPT_COMMAND=prompt_command
 
 
 # aliases
-export WIN_HOME="/mnt/c/Users/peter/"
+export WIN_HOME="/cygdrive/c/Users/peter/"
 alias cdw="cd $WIN_HOME"
 alias s='source ~/.bashrc'
 
