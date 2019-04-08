@@ -51,4 +51,7 @@ choco update <...>
 # choco install --yes jdk8
 ```
 
+## Step 3 - Install sts
+
+
 
