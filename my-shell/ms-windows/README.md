@@ -13,6 +13,9 @@ Set-ExecutionPolicy RemoteSigned
 
 # load in the new profile. try du command to verify
 . $profile
+
+# get ssh
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
 ```
 
 
