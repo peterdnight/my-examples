@@ -22,13 +22,14 @@ import org.springframework.security.crypto.password.PasswordEncoder ;
 // @EnableWebSecurity: configured via yaml
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	public static final String ADMIN = "admin" ;
+	public static final String	ADMIN	= "admin" ;
 
-	public static final String USER = "user" ;
+	public static final String	USER	= "user" ;
 
-	Logger	logger	= LoggerFactory.getLogger( getClass() ) ;
+	Logger						logger	= LoggerFactory.getLogger( getClass() ) ;
 
-	boolean	enabled	= false ;
+	boolean						enabled	= false ;
+	boolean						basic	= false ;
 
 	@Override
 	protected void configure (
@@ -45,14 +46,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure (
-								final HttpSecurity http )
+								final HttpSecurity httpSecurity )
 			throws Exception {
 
 		// @formatter:off
-		http
+		httpSecurity
 			.csrf().disable()
 			
-			.httpBasic().and()
+//			.httpBasic().and()
 			
 			.authorizeRequests()
 				.antMatchers( "/admin/**" ).hasRole( "ADMIN" )
@@ -62,21 +63,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and()
 
 			.formLogin()
-				.and()
 //				.disable()
+//				.loginPage( "/login.html" )
+//				.loginProcessingUrl("/perform_login")
+//				.defaultSuccessUrl("/homepage.html", true)
+//				.failureUrl("/login.html?error=true")
+				//.failureHandler(authenticationFailureHandler())
+				.and()
 				
-			//	.loginPage( "/login.html" )
-			// .loginProcessingUrl("/perform_login")
-			// .defaultSuccessUrl("/homepage.html", true)
-			// //.failureUrl("/login.html?error=true")
-			// .failureHandler(authenticationFailureHandler())
-			//	.and()
+
 				
 			.logout()
-				.logoutUrl( "/perform_logout" )
+//				.logoutUrl( "/perform_logout" )
+//				.logoutSuccessHandler(logoutSuccessHandler())
 				.deleteCookies( "JSESSIONID" ) ;
-		// .logoutSuccessHandler(logoutSuccessHandler());
+		
+		// 
 		// @formatter:on
+		
+		if ( isBasic() ) {
+			httpSecurity.httpBasic() ;
+		}
 
 	}
 
@@ -92,5 +99,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void setEnabled (
 								boolean disabled ) {
 		this.enabled = disabled ;
+	}
+
+	public boolean isBasic () {
+		return basic ;
+	}
+
+	public void setBasic (
+							boolean basic ) {
+		this.basic = basic ;
 	}
 }

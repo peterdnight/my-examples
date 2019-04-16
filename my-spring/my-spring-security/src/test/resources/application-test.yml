@@ -1,2 +1,6 @@
 logging:
   config: "classpath:log4j2-test.yml"
+  
+  
+my-examples.security.basic: true
+  
