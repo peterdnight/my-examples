@@ -55,7 +55,7 @@ public class DemoApplicationNoSecurityTests {
 		
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( "/hi" )
+			get( MyRestApi.URI_API_HI )
 				// .param( "sampleParam1", "sampleValue1" )
 				// .param( "sampleParam2", "sampleValue2" )
 				.accept( MediaType.TEXT_PLAIN ) ) ;

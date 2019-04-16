@@ -25,10 +25,12 @@ import org.apache.logging.log4j.Level ;
 import org.apache.logging.log4j.core.config.Configurator ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
+import org.springframework.mock.web.MockHttpServletResponse ;
 
 import com.fasterxml.jackson.core.JsonProcessingException ;
 import com.fasterxml.jackson.databind.JsonNode ;
 import com.fasterxml.jackson.databind.ObjectMapper ;
+import com.fasterxml.jackson.databind.SerializationFeature ;
 import com.fasterxml.jackson.databind.node.ArrayNode ;
 import com.fasterxml.jackson.databind.node.ObjectNode ;
 
@@ -48,6 +50,16 @@ public class Helpers {
 	}
 
 	final static private Logger	logger			= LoggerFactory.getLogger( Helpers.class ) ;
+	
+
+	public static void printDetails (
+								Object theItem ) {
+		
+		ObjectMapper			jsonMapper = new ObjectMapper() ;
+		jsonMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false ) ;
+		ObjectNode r = jsonMapper.convertValue( theItem, ObjectNode.class ) ;
+		logger.info( "{}:\n {}", Thread.currentThread().getStackTrace()[2].getMethodName(), Helpers.jsonPrint( r ) ) ;
+	}
 
 	public static final long	ONE_SECOND_MS	= 1000 ;
 	public static final long	ONE_MINUTE_MS	= 60 * 1000 ;

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory ;
 import org.springframework.boot.test.context.SpringBootTest ;
 import org.springframework.http.MediaType ;
 import org.springframework.mock.web.MockHttpServletResponse ;
+import org.springframework.security.test.context.support.WithMockUser ;
 import org.springframework.test.context.ActiveProfiles ;
 import org.springframework.test.web.servlet.MockMvc ;
 import org.springframework.test.web.servlet.ResultActions ;
@@ -33,9 +34,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode ;
 @ActiveProfiles ( "test" )
 
 @TestInstance ( TestInstance.Lifecycle.PER_CLASS )
-@DisplayName ( "Demo Application: full context with security enabled" )
+@DisplayName ( "Demo Application: full context with Mock Security" )
 
-public class DemoApplicationTests {
+public class DemoApplicationMockSecurityTests {
 
 	Logger					logger	= LoggerFactory.getLogger( getClass() ) ;
 
@@ -59,7 +60,31 @@ public class DemoApplicationTests {
 	void contextLoads () {}
 
 	@Test
-	@DisplayName ( "security ignored by default" )
+	@WithMockUser
+	@DisplayName ( "security with mock user" )
+	public void verifySecurityWithMockUser ()
+			throws Exception {
+
+		logger.info( Helpers.testHeader() ) ;
+
+		// mock does much validation.....
+		ResultActions	resultActions	= mockMvc.perform(
+			get( MyRestApi.URI_API_HI )
+				.accept( MediaType.TEXT_PLAIN ) ) ;
+
+		//
+		String			result			= resultActions
+			.andExpect( status().isOk() )
+			.andExpect( content().contentTypeCompatibleWith( MediaType.TEXT_PLAIN ) )
+			.andReturn().getResponse().getContentAsString() ;
+		logger.info( "result: {}", result ) ;
+
+		assertThat( result ).contains( (new MyRestApi()).hi() ) ;
+
+	}
+
+	@Test
+	@DisplayName ( "security with authenticated user" )
 	public void verifySecurityWithAuthenticatedUser ()
 			throws Exception {
 
@@ -67,8 +92,8 @@ public class DemoApplicationTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( "/hi" )
-				.with(  user( "peter" ) )
+			get( MyRestApi.URI_API_HI )
+				.with( user( "peter" ) )
 				.accept( MediaType.TEXT_PLAIN ) ) ;
 
 		//
@@ -91,7 +116,7 @@ public class DemoApplicationTests {
 
 		// mock does much validation.....
 		ResultActions			resultActions	= mockMvc.perform(
-			get( "/hi" ).with( anonymous() )
+			get( MyRestApi.URI_API_HI ).with( anonymous() )
 				.accept( MediaType.TEXT_PLAIN ) ) ;
 
 		//
@@ -99,9 +124,7 @@ public class DemoApplicationTests {
 			.andExpect( status().is3xxRedirection() )
 			.andReturn().getResponse() ;
 
-		jsonMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false ) ;
-		ObjectNode r = jsonMapper.convertValue( response, ObjectNode.class ) ;
-		logger.info( "result:\n {}", Helpers.jsonPrint( r ) ) ;
+		Helpers.printDetails( response ) ;
 
 		assertThat( response.getRedirectedUrl() ).isEqualTo( "http://localhost/login" ) ;
 
@@ -116,7 +139,7 @@ public class DemoApplicationTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( "/hi" )
+			get( MyRestApi.URI_API_HI )
 				.with( user( "admin" ).password( "admin" ).roles( "USER", "ADMIN" ) )
 				// .param( "sampleParam1", "sampleValue1" )
 				// .param( "sampleParam2", "sampleValue2" )

@@ -22,6 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder ;
 // @EnableWebSecurity: configured via yaml
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	public static final String ADMIN = "admin" ;
+
+	public static final String USER = "user" ;
+
 	Logger	logger	= LoggerFactory.getLogger( getClass() ) ;
 
 	boolean	enabled	= false ;
@@ -34,9 +38,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		logger.info( "Adding in memory configuration..." ) ;
 
 		auth.inMemoryAuthentication()
-			.withUser( "user" ).password( passwordEncoder().encode( "user" ) ).roles( "USER" )
+			.withUser( USER ).password( passwordEncoder().encode( USER ) ).roles( "USER" )
 			.and()
-			.withUser( "admin" ).password( passwordEncoder().encode( "admin" ) ).roles( "ADMIN" ) ;
+			.withUser( ADMIN ).password( passwordEncoder().encode( ADMIN ) ).roles( "ADMIN" ) ;
 	}
 
 	@Override
@@ -47,6 +51,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// @formatter:off
 		http
 			.csrf().disable()
+			
+			.httpBasic().and()
 			
 			.authorizeRequests()
 				.antMatchers( "/admin/**" ).hasRole( "ADMIN" )
