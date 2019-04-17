@@ -1,5 +1,6 @@
 package org.sample.bootdemo ;
 
+import org.keycloak.adapters.springboot.KeycloakAutoConfiguration ;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver ;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider ;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter ;
@@ -25,18 +26,21 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @ConfigurationProperties ( prefix = "my-examples.security" )
 @ConditionalOnProperty ( value = "my-examples.security.enabled" )
 @Import ( {
-		SecurityAutoConfiguration.class } )
+		SecurityAutoConfiguration.class,
+		KeycloakAutoConfiguration.class } )
 
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
-	public static final String	ADMIN	= "admin" ;
+	public static final String	CSAP_VIEW	= "csap-view" ;
 
-	public static final String	USER	= "user" ;
+	public static final String	ADMIN		= "admin" ;
 
-	Logger						logger	= LoggerFactory.getLogger( getClass() ) ;
+	public static final String	USER		= "user" ;
 
-	boolean						enabled	= false ;
-	boolean						basic	= false ;
+	Logger						logger		= LoggerFactory.getLogger( getClass() ) ;
+
+	boolean						enabled		= false ;
+	boolean						basic		= false ;
 
 	// @Component
 	// public class LoginListener implements ApplicationListener<InteractiveAuthenticationSuccessEvent> {
@@ -103,8 +107,8 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 //			.httpBasic().and()
 			
 			.authorizeRequests()
-			.antMatchers( "/api/open/**" ).anonymous()
-				.antMatchers( "/api/**" ).hasRole( "csap-view" )
+			.antMatchers( MyRestApi.URI_OPEN_API_HI ).anonymous()
+				.antMatchers( MyRestApi.URI_SECURE_API_HI ).hasRole( CSAP_VIEW )
 				.antMatchers( "/login*" ).permitAll()
 				.anyRequest().authenticated()
 				

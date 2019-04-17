@@ -27,8 +27,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders ;
 import org.springframework.web.context.WebApplicationContext ;
 
 import com.fasterxml.jackson.databind.ObjectMapper ;
-import com.fasterxml.jackson.databind.SerializationFeature ;
-import com.fasterxml.jackson.databind.node.ObjectNode ;
 
 @SpringBootTest
 @ActiveProfiles ( "test" )
@@ -47,6 +45,9 @@ public class DemoApplicationMockSecurityTests {
 	@Inject
 	ObjectMapper			jsonMapper ;
 
+	@Inject
+	MyRestApi				myRestApi ;
+
 	@BeforeAll
 	void beforeAll ()
 			throws Exception {
@@ -60,7 +61,7 @@ public class DemoApplicationMockSecurityTests {
 	void contextLoads () {}
 
 	@Test
-	@WithMockUser
+	@WithMockUser(roles=SecurityConfiguration.CSAP_VIEW)
 	@DisplayName ( "security with mock user" )
 	public void verifySecurityWithMockUser ()
 			throws Exception {
@@ -69,17 +70,18 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_API_HI )
-				.accept( MediaType.TEXT_PLAIN ) ) ;
+			get( MyRestApi.URI_SECURE_API_HI )
+				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
 		//
 		String			result			= resultActions
 			.andExpect( status().isOk() )
-			.andExpect( content().contentTypeCompatibleWith( MediaType.TEXT_PLAIN ) )
+			.andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON_UTF8_VALUE  ) )
 			.andReturn().getResponse().getContentAsString() ;
+		
 		logger.info( "result: {}", result ) ;
 
-		assertThat( result ).contains( (new MyRestApi()).hiTest() ) ;
+		assertThat( result ).matches( myRestApi.resultTestPattern() ) ;
 
 	}
 
@@ -92,18 +94,18 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_API_HI )
-				.with( user( "peter" ) )
-				.accept( MediaType.TEXT_PLAIN ) ) ;
+			get( MyRestApi.URI_SECURE_API_HI )
+				.with( user( "peter" ).roles( SecurityConfiguration.CSAP_VIEW ) )
+				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
 		//
 		String			result			= resultActions
 			.andExpect( status().isOk() )
-			.andExpect( content().contentTypeCompatibleWith( MediaType.TEXT_PLAIN ) )
+			.andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON_UTF8_VALUE  ) )
 			.andReturn().getResponse().getContentAsString() ;
 		logger.info( "result: {}", result ) ;
 
-		assertThat( result ).contains( (new MyRestApi()).hiTest() ) ;
+		assertThat( result ).matches( myRestApi.resultTestPattern() ) ;
 
 	}
 
@@ -116,8 +118,8 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions			resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_API_HI ).with( anonymous() )
-				.accept( MediaType.TEXT_PLAIN ) ) ;
+			get( MyRestApi.URI_SECURE_API_HI ).with( anonymous() )
+				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
 		//
 		MockHttpServletResponse	response		= resultActions
@@ -126,7 +128,7 @@ public class DemoApplicationMockSecurityTests {
 
 		Helpers.printDetails( response ) ;
 
-		assertThat( response.getRedirectedUrl() ).isEqualTo( "http://localhost/login" ) ;
+		assertThat( response.getRedirectedUrl() ).isEqualTo( "/sso/login" ) ;
 
 	}
 
@@ -139,20 +141,20 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_API_HI )
-				.with( user( "admin" ).password( "admin" ).roles( "USER", "ADMIN" ) )
+			get( MyRestApi.URI_SECURE_API_HI )
+				.with( user( "admin" ).password( "admin" ).roles( SecurityConfiguration.CSAP_VIEW ) )
 				// .param( "sampleParam1", "sampleValue1" )
 				// .param( "sampleParam2", "sampleValue2" )
-				.accept( MediaType.TEXT_PLAIN ) ) ;
+				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE ) ) ;
 
 		//
 		String			result			= resultActions
 			.andExpect( status().isOk() )
-			.andExpect( content().contentTypeCompatibleWith( MediaType.TEXT_PLAIN ) )
+			.andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON_UTF8_VALUE ) )
 			.andReturn().getResponse().getContentAsString() ;
 		logger.info( "result: {}", result ) ;
 
-		assertThat( result ).contains( (new MyRestApi()).hiTest() ) ;
+		assertThat( result ).matches( myRestApi.resultTestPattern() ) ;
 
 	}
 

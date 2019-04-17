@@ -8,6 +8,9 @@ import org.junit.jupiter.api.TestInstance ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 
+import com.fasterxml.jackson.databind.JsonNode ;
+import com.fasterxml.jackson.databind.ObjectMapper ;
+
 @TestInstance ( TestInstance.Lifecycle.PER_METHOD )
 @DisplayName ( "Rest Api: Direct" )
 
@@ -17,10 +20,15 @@ class MyRestApiTest {
 
 	@Test
 	void testHi () {
+		logger.info( Helpers.testHeader() );
 
-		MyRestApi api = new MyRestApi() ;
+		MyRestApi api = new MyRestApi(new ObjectMapper()) ;
+		
+		JsonNode result = api.hi( null ) ;
+		
+		logger.info( "result: {}", Helpers.jsonPrint( result ) );
 
-		assertThat( api.hiTest() ).isEqualTo( "hi" ) ;
+		assertThat( result.toString() ).matches( api.resultTestPattern() ) ;
 
 	}
 

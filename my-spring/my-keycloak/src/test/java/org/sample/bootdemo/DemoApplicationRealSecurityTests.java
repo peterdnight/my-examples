@@ -1,9 +1,6 @@
 package org.sample.bootdemo ;
 
 import static org.assertj.core.api.Assertions.assertThat ;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get ;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content ;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status ;
 
 import javax.inject.Inject ;
 
@@ -20,13 +17,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder ;
 import org.springframework.boot.web.server.LocalServerPort ;
 import org.springframework.http.HttpHeaders ;
 import org.springframework.http.HttpStatus ;
-import org.springframework.http.MediaType ;
 import org.springframework.http.ResponseEntity ;
 import org.springframework.test.context.ActiveProfiles ;
-import org.springframework.test.web.servlet.MockMvc ;
-import org.springframework.test.web.servlet.ResultActions ;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders ;
-import org.springframework.web.context.WebApplicationContext ;
 
 import com.fasterxml.jackson.databind.ObjectMapper ;
 
@@ -49,6 +41,9 @@ public class DemoApplicationRealSecurityTests {
 	@Inject
 	ObjectMapper		jsonMapper ;
 
+	@Inject
+	MyRestApi			myRestApi ;
+
 	@BeforeAll
 	void beforeAll ()
 			throws Exception {
@@ -65,7 +60,7 @@ public class DemoApplicationRealSecurityTests {
 	public void verifyHiWithUserAndPass ()
 			throws Exception {
 
-		String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_API_HI ;
+		String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_SECURE_API_HI ;
 
 		logger.info( Helpers.testHeader( simpleUrl ) ) ;
 
@@ -76,15 +71,13 @@ public class DemoApplicationRealSecurityTests {
 			.getForEntity(
 				simpleUrl,
 				String.class ) ;
-		
 
 		Helpers.printDetails( responseFromCredQuery ) ;
-		
+
 		assertThat( responseFromCredQuery.getStatusCode() ).isEqualTo( HttpStatus.OK ) ;
 		assertThat( responseFromCredQuery.getHeaders().get( HttpHeaders.SET_COOKIE ).toString() ).contains( "JSESSIONID" ) ;
 
-
-		assertThat( responseFromCredQuery.getBody() ).contains( (new MyRestApi()).hiTest() ) ;
+		assertThat( responseFromCredQuery.getBody() ).matches( myRestApi.resultTestPattern() ) ;
 
 	}
 

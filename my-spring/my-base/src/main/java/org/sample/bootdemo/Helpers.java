@@ -36,6 +36,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode ;
 public class Helpers {
 	final public static String LINE = "\n_______________________________________________________________________________________________\n" ;
 
+	public static String header (
+									String message ) {
+		return "\n\n" + LINE + "\n " + message + LINE ;
+	}
+
 	public static String testHeader (
 										String message ) {
 		return "\n\n" + LINE
@@ -116,7 +121,7 @@ public class Helpers {
 		try {
 			return WordUtils.wrap( _jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString( j ), 180, "\n\t\t", true ) ;
 		} catch ( JsonProcessingException e ) {
-			logger.warn( "Failed rendering a json object: {}", buildCsapStack( e ) ) ;
+			logger.warn( "Failed rendering a json object: {}", buildSampleStack( e ) ) ;
 		}
 		return "FAILED_TO_PARSE" ;
 	}
@@ -140,9 +145,9 @@ public class Helpers {
 		return stack ;
 	}
 
-	public static String buildCsapStack (
+	public static String buildSampleStack (
 											Throwable possibleNestedThrowable ) {
-		return buildFilteredStack( possibleNestedThrowable, "csap" ) ;
+		return buildFilteredStack( possibleNestedThrowable, "sample" ) ;
 	}
 
 	public static String buildFilteredStack (

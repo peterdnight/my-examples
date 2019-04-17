@@ -34,6 +34,10 @@ public class DemoApplicationNoSecurityTests {
 	@Inject
 	WebApplicationContext	wac ;
 	MockMvc					mockMvc ;
+	
+
+	@Inject
+	MyRestApi				myRestApi ;
 
 	@BeforeAll
 	void beforeAll ()
@@ -50,24 +54,24 @@ public class DemoApplicationNoSecurityTests {
 	@Test
 	public void verifyHiIsNotSecured ()
 			throws Exception {
-		
-		logger.info( Helpers.testHeader()) ;
-		
+
+		logger.info( Helpers.testHeader() ) ;
+
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_API_HI )
+			get( MyRestApi.URI_SECURE_API_HI )
 				// .param( "sampleParam1", "sampleValue1" )
 				// .param( "sampleParam2", "sampleValue2" )
-				.accept( MediaType.TEXT_PLAIN ) ) ;
+				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE ) ) ;
 
 		//
 		String			result			= resultActions
 			.andExpect( status().isOk() )
-			.andExpect( content().contentTypeCompatibleWith( MediaType.TEXT_PLAIN ) )
+			.andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON_UTF8_VALUE ) )
 			.andReturn().getResponse().getContentAsString() ;
 		logger.info( "result:\n" + result ) ;
 
-		assertThat( result ).contains( "hi" ) ;
+		assertThat( result ).matches( myRestApi.resultTestPattern() ) ;
 
 	}
 

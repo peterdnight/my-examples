@@ -84,10 +84,6 @@ info:
 #  security configuration
 #
 my-examples.security.enabled: true
-spring.autoconfigure.exclude: 
-    - org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
-    - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-    - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 
 #
 #  Core Spring
