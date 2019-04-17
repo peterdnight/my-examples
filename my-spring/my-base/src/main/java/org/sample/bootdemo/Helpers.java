@@ -48,16 +48,26 @@ public class Helpers {
 				+ LINE ;
 	}
 
-	final static private Logger	logger			= LoggerFactory.getLogger( Helpers.class ) ;
-	
+	final static private Logger logger = LoggerFactory.getLogger( Helpers.class ) ;
 
 	public static void printDetails (
-								Object theItem ) {
-		
-		ObjectMapper			jsonMapper = new ObjectMapper() ;
+										Object theItem ) {
+
+		ObjectMapper jsonMapper = new ObjectMapper() ;
 		jsonMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false ) ;
 		ObjectNode r = jsonMapper.convertValue( theItem, ObjectNode.class ) ;
 		logger.info( "{}:\n {}", Thread.currentThread().getStackTrace()[2].getMethodName(), Helpers.jsonPrint( r ) ) ;
+	}
+
+	public static ObjectNode getDetails (
+											Object theItem ) {
+
+		ObjectMapper jsonMapper = new ObjectMapper() ;
+		jsonMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false ) ;
+		ObjectNode jsonDetails = jsonMapper.convertValue( theItem, ObjectNode.class ) ;
+		logger.debug( "{}:\n {}", Thread.currentThread().getStackTrace()[2].getMethodName(), Helpers.jsonPrint( jsonDetails ) ) ;
+
+		return jsonDetails ;
 	}
 
 	public static final long	ONE_SECOND_MS	= 1000 ;
