@@ -1,0 +1,13 @@
+{
+	"notes": "this is not used, but codifed using spring boot injected properties", 
+	"realm": "xxxx",
+	"auth-server-url": "http://localhost:8080/auth",
+	"ssl-required": "none",
+	"resource": "csap",
+	"verify-token-audience": true,
+	"credentials": {
+		"secret": "xx-xx-xx-xx-xx"
+	},
+	"use-resource-role-mappings": true,
+	"confidential-port": 0
+}

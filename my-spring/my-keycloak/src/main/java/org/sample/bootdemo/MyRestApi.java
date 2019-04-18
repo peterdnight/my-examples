@@ -55,8 +55,9 @@ public class MyRestApi {
 											String location ) {
 		ObjectNode hi = jsonMapper.createObjectNode() ;
 		hi.put( "message", location ) ;
-		var formatedTime = LocalDateTime.now().format( DateTimeFormatter.ofPattern( "HH:mm:ss,   MMMM d  uuuu " ) ) ;
+		var formatedTime = LocalDateTime.now().format( DateTimeFormatter.ofPattern( "HH:mm:ss, MMMM d  uuuu " ) ) ;
 		hi.put( "time", formatedTime ) ;
+		hi.put( "millis", System.currentTimeMillis() ) ;
 
 		try {
 			hi.put( "root", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() ) ;

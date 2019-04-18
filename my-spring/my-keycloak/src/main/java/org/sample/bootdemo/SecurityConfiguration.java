@@ -2,15 +2,21 @@ package org.sample.bootdemo ;
 
 import org.keycloak.adapters.springboot.KeycloakAutoConfiguration ;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver ;
+import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents ;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider ;
+import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory ;
+import org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate ;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter ;
+import org.keycloak.adapters.springsecurity.management.HttpSessionManager ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.beans.factory.annotation.Autowired ;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean ;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty ;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration ;
 import org.springframework.boot.context.properties.ConfigurationProperties ;
 import org.springframework.context.annotation.Bean ;
+import org.springframework.context.annotation.ComponentScan ;
 import org.springframework.context.annotation.Configuration ;
 import org.springframework.context.annotation.Import ;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder ;
@@ -28,8 +34,10 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @Import ( {
 		SecurityAutoConfiguration.class,
 		KeycloakAutoConfiguration.class } )
-
+@ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
+	
+	// https://www.keycloak.org/docs/latest/securing_apps/index.html
 
 	public static final String	CSAP_VIEW	= "csap-view" ;
 
@@ -54,6 +62,13 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 	// Helpers.printDetails( userDetails ) ;
 	// }
 	// }
+	
+    @Bean
+    @Override
+    @ConditionalOnMissingBean(HttpSessionManager.class)
+    protected HttpSessionManager httpSessionManager() {
+        return new HttpSessionManager();
+    }
 
 	@Autowired
 	public void configureGlobal (
@@ -77,6 +92,16 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 		return new RegisterSessionAuthenticationStrategy(
 			new SessionRegistryImpl() ) ;
 	}
+	
+
+	@Autowired
+    public KeycloakClientRequestFactory keycloakClientRequestFactory;
+	
+    @Bean
+    public KeycloakRestTemplate keycloakRestTemplate() {
+    	
+        return new KeycloakRestTemplate(keycloakClientRequestFactory);
+    }
 
 	// @Override
 	// protected void configure (
