@@ -39,7 +39,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 	
 	// https://www.keycloak.org/docs/latest/securing_apps/index.html
 
-	public static final String	CSAP_VIEW	= "csap-view" ;
+	public static final String	CSAP_VIEW	= "ViewRole" ;
 
 	public static final String	ADMIN		= "admin" ;
 

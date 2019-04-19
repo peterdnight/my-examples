@@ -14,12 +14,12 @@ spring:
 spring.profiles: app-defaults
 
 keycloak:
-  realm: ${keycloakRealm}
-  auth-server-url: ${keycloakUrl:http://localhost:8180/auth}
+  realm: csap-default
+  auth-server-url: http://csap-dev01.lab.sensus.net:8090/auth
   ssl-required: external
   resource: csap
   credentials:
-    secret: ${keycloakSecret:xx-xx-xx-xx-xx}
+    secret: a619147e-ff21-4423-959c-5a114d2b7c3f
   use-resource-role-mappings: true
   public-client: true
 #  securityConstraints:
