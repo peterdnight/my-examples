@@ -83,7 +83,7 @@ class DemoApplicationRealSecurityTests {
 	@DisplayName ( "secure endpoint access via authz token" )
 	void verifySecureApiUsingAuthzClient () {
 
-		String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_SECURE_API_HI ;
+		String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_AUTHORIZED_HI ;
 
 		logger.info( Helpers.testHeader( simpleUrl ) ) ;
 

@@ -24,7 +24,7 @@ class MyRestApiTest {
 
 		MyRestApi api = new MyRestApi(new ObjectMapper()) ;
 		
-		JsonNode result = api.hi( null ) ;
+		JsonNode result = api.authorizedHi( null ) ;
 		
 		logger.info( "result: {}", Helpers.jsonPrint( result ) );
 

@@ -3,16 +3,12 @@ package org.sample.bootdemo ;
 import java.time.LocalDateTime ;
 import java.time.format.DateTimeFormatter ;
 
-import javax.inject.Inject ;
-
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.beans.factory.annotation.Autowired ;
 import org.springframework.security.authentication.AbstractAuthenticationToken ;
 import org.springframework.security.core.annotation.AuthenticationPrincipal ;
 import org.springframework.web.bind.annotation.GetMapping ;
-import org.springframework.web.bind.annotation.RequestMapping ;
 import org.springframework.web.bind.annotation.RestController ;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder ;
 
@@ -23,14 +19,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode ;
 @RestController
 // @RequestMapping ( MyRestApi.URI_BASE )
 public class MyRestApi {
-	
-	Logger						logger				= LoggerFactory.getLogger( getClass() ) ;
 
-	public final static String	URI_OPEN			= "/open" ;
-	public final static String	URI_BASE			= "/api" ;
-	private final static String	URI_HI				= "/hi" ;
-	public final static String	URI_SECURE_API_HI	= URI_BASE + URI_HI ;
-	public final static String	URI_OPEN_API_HI		= URI_OPEN + URI_HI ;
+	Logger						logger					= LoggerFactory.getLogger( getClass() ) ;
+
+	public final static String	URI_ANONYMOUS			= "/anonymous" ;
+	public final static String	URI_AUTHENTICATED		= "/authenticated" ;
+	public final static String	URI_OPEN				= "/open" ;
+	public final static String	URI_AUTHORIZED			= "/authorized" ;
+	private final static String	URI_HI					= "/hi" ;
+	public final static String	URI_AUTHENTICATED_HI	= URI_AUTHENTICATED + URI_HI ;
+	public final static String	URI_AUTHORIZED_HI		= URI_AUTHORIZED + URI_HI ;
+	public final static String	URI_OPEN_API_HI			= URI_OPEN + URI_HI ;
+	public final static String	URI_ANON_API_HI			= URI_ANONYMOUS + URI_HI ;
 
 	ObjectMapper				jsonMapper ;
 
@@ -60,11 +60,13 @@ public class MyRestApi {
 		hi.put( "millis", System.currentTimeMillis() ) ;
 
 		try {
-			hi.put( "root", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() ) ;
+			hi.put( "landing page", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() ) ;
+			hi.put( "test authorized", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHORIZED_HI ).toUriString() ) ;
+			hi.put( "test authenticated", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHENTICATED_HI ).toUriString() ) ;
+			hi.put( "test open", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_OPEN_API_HI ).toUriString() ) ;
+			hi.put( "test anonymous", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_ANON_API_HI ).toUriString() ) ;
 			hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;
 			hi.put( "sso/logout", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/sso/logout" ).toUriString() ) ;
-			hi.put( "secured-url", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_SECURE_API_HI ).toUriString() ) ;
-			hi.put( "unsecured-url", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_OPEN_API_HI ).toUriString() ) ;
 		} catch ( Exception e ) {
 
 			logger.info( Helpers.buildSampleStack( e ) ) ;
@@ -74,8 +76,8 @@ public class MyRestApi {
 		return hi ;
 	}
 
-	@GetMapping ( URI_SECURE_API_HI )
-	public JsonNode hi (
+	@GetMapping ( URI_AUTHORIZED_HI )
+	public JsonNode authorizedHi (
 							@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
 		var			location	= "secured-get" ;
@@ -94,6 +96,25 @@ public class MyRestApi {
 								@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
 		var location = "unsecured-get" ;
+
+		return buildApiResponse( customUser, location ) ;
+	}
+
+	@GetMapping ( URI_ANON_API_HI )
+	public JsonNode anonymousHi (
+									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
+
+		var location = "anonymous-get" ;
+
+		return buildApiResponse( customUser, location ) ;
+	}
+
+
+	@GetMapping ( URI_AUTHENTICATED_HI )
+	public JsonNode authHi (
+									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
+
+		var location = "anonymous-get" ;
 
 		return buildApiResponse( customUser, location ) ;
 	}

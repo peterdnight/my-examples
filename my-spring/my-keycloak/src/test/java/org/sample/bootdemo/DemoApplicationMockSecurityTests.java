@@ -70,7 +70,7 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_SECURE_API_HI )
+			get( MyRestApi.URI_AUTHORIZED_HI )
 				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
 		//
@@ -94,7 +94,7 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_SECURE_API_HI )
+			get( MyRestApi.URI_AUTHORIZED_HI )
 				.with( user( "peter" ).roles( SecurityConfiguration.CSAP_VIEW ) )
 				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
@@ -118,7 +118,7 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions			resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_SECURE_API_HI ).with( anonymous() )
+			get( MyRestApi.URI_AUTHORIZED_HI ).with( anonymous() )
 				.accept( MediaType.APPLICATION_JSON_UTF8_VALUE  ) ) ;
 
 		//
@@ -141,7 +141,7 @@ public class DemoApplicationMockSecurityTests {
 
 		// mock does much validation.....
 		ResultActions	resultActions	= mockMvc.perform(
-			get( MyRestApi.URI_SECURE_API_HI )
+			get( MyRestApi.URI_AUTHORIZED_HI )
 				.with( user( "admin" ).password( "admin" ).roles( SecurityConfiguration.CSAP_VIEW ) )
 				// .param( "sampleParam1", "sampleValue1" )
 				// .param( "sampleParam2", "sampleValue2" )
