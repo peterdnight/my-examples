@@ -1,0 +1,122 @@
+#
+# Loads default settings for spring services and csap
+# NOTE: any values set in dev
+#    
+spring:
+
+  profiles:
+  
+    active: desktop # Override using --spring.profiles.active=xxx,yyy,zzz
+    include: 
+    - app-defaults
+
+---
+spring.profiles: app-defaults
+
+
+#
+#  Servlet & Tomcat
+#
+server:
+  port: 8080
+  tomcat:
+    max-threads: 50
+  servlet:
+    context-path: /
+    session:
+      persistent: false
+      cookie:
+        name: ${mySessionCookie:JSESSIONID}
+  error:
+    include-stacktrace: always
+    
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - text/html
+      - text/xml
+      - text/plain
+
+#
+#  spring actuator endpoints
+# 
+management: 
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /manage
+      exposure:
+        include: "*"
+      
+info:
+  build.profile: ${spring.profiles.active}
+  build.artifact: "Maven: @project.artifactId@"
+  build.name: "@project.name@"
+  build.description: "@project.description@"
+  build.version: "@project.version@"
+
+
+#
+# security setup:
+#   - deploy keycloak via docker
+#   - add test realm:  csap-default-realm
+#   - add test user: testuser,testpass
+#   - add test client: csap, with test roles: ViewRole
+#   - add test scope: csap-roles-scope
+#     - set token name: csap-claim-name
+#
+my-examples.security:
+  enabled: true
+  token-claim-name: "csap-claim-name"
+
+#
+#  Core Spring
+#
+spring:
+
+  devtools.restart.additional-exclude: "**/*.jmx,**/*.csv,**/*.json"
+  
+  mail:
+    host: "${mailServer:smtp.yourcompany.com}"
+    port: "${mailPort:25}"
+    
+  output:
+    ansi:
+      enabled: never 
+  resources: 
+    cache:
+      period: 32000000
+
+  aop:
+    proxy-target-class: true
+    
+  thymeleaf:
+    mode: HTML
+
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${oauthClientId:csap}
+            client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
+            clientName: Keycloak
+            authorization-grant-type: authorization_code
+            redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+              - csap-roles-scope
+        provider:
+          keycloak:
+            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/auth
+            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/token
+            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/userinfo
+            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+      
