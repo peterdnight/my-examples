@@ -191,6 +191,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers( MyRestApi.URI_AUTHENTICATED_HI ).hasRole( AUTHENTICATED )
 				.antMatchers( "/**" ).permitAll()
 				
+				.and()
+					.exceptionHandling()
+					.accessDeniedPage( MyRestApi.URI_ACCESS_DENIED )
+				
 				// https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#oauth2login-advanced-map-authorities
 				.and()
 					.oauth2Login()

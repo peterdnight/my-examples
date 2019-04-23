@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode ;
 // @RequestMapping ( MyRestApi.URI_BASE )
 public class MyRestApi {
 
+	private static final String ACCESS_DENIED = "Access Denied" ;
+
 	Logger						logger					= LoggerFactory.getLogger( getClass() ) ;
 
 	public final static String	URI_ANONYMOUS			= "/anonymous" ;
@@ -31,6 +33,8 @@ public class MyRestApi {
 	public final static String	URI_AUTHORIZED_HI		= URI_AUTHORIZED + URI_HI ;
 	public final static String	URI_OPEN_API_HI			= URI_OPEN + URI_HI ;
 	public final static String	URI_ANON_API_HI			= URI_ANONYMOUS + URI_HI ;
+
+	public final static String	URI_ACCESS_DENIED		= URI_OPEN + "/accessDenied" ;
 
 	ObjectMapper				jsonMapper ;
 
@@ -61,24 +65,28 @@ public class MyRestApi {
 
 		try {
 			hi.put( "landing page", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() ) ;
-			hi.put( "test authorized", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHORIZED_HI ).toUriString() ) ;
-			hi.put( "test authenticated", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHENTICATED_HI ).toUriString() ) ;
-			hi.put( "test open", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_OPEN_API_HI ).toUriString() ) ;
-			hi.put( "test anonymous", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_ANON_API_HI ).toUriString() ) ;
-			hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;
-			hi.put( "logout", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/logout" ).toUriString() ) ;
+			if ( !location.equals( ACCESS_DENIED ) ) {
+				hi.put( "test authorized", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHORIZED_HI ).toUriString() ) ;
+				hi.put( "test authenticated",
+					ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHENTICATED_HI ).toUriString() ) ;
+				hi.put( "test open", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_OPEN_API_HI ).toUriString() ) ;
+				hi.put( "test anonymous", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_ANON_API_HI ).toUriString() ) ;
+				hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;
+				hi.put( "logout", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/logout" ).toUriString() ) ;
+
+				hi.set( "principal", Helpers.getDetails( customUser ) ) ;
+			}
 		} catch ( Exception e ) {
 
 			logger.info( Helpers.buildSampleStack( e ) ) ;
 		}
 
-		hi.set( "principal", Helpers.getDetails( customUser ) ) ;
 		return hi ;
 	}
 
 	@GetMapping ( URI_AUTHORIZED_HI )
 	public JsonNode authorizedHi (
-							@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
+									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
 		var			location	= "secured-get" ;
 
@@ -109,14 +117,20 @@ public class MyRestApi {
 		return buildApiResponse( customUser, location ) ;
 	}
 
-
 	@GetMapping ( URI_AUTHENTICATED_HI )
 	public JsonNode authHi (
-									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
+								@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
 		var location = "anonymous-get" ;
 
 		return buildApiResponse( customUser, location ) ;
+	}
+
+	@GetMapping ( URI_ACCESS_DENIED )
+	public JsonNode accessDenied (
+									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
+
+		return buildApiResponse( customUser, ACCESS_DENIED ) ;
 	}
 
 }
