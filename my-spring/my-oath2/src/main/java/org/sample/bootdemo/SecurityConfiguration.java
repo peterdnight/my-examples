@@ -201,6 +201,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.userInfoEndpoint()
                 			.userAuthoritiesMapper(this.userOpenIdAuthoritiesMapper())
                 			.and()
+                			
+                .and()
+                	.oauth2ResourceServer()
+                		.jwt()
+                		.and()
+                		
+        			
 				
                 // https://info.michael-simons.eu/2017/12/28/use-keycloak-with-your-spring-boot-2-application/
 				.and()
@@ -213,6 +220,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	}
 	// @formatter:on
+	
+	
 
 	@Bean
 	public PasswordEncoder passwordEncoder () {

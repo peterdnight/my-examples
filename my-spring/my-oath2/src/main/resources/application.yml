@@ -63,7 +63,7 @@ info:
 #
 # security setup:
 #   - deploy keycloak via docker
-#   - add test realm:  csap-default-realm
+#   - add test realm:  csap-default
 #   - add test user: testuser,testpass
 #   - add test client: csap, with test roles: ViewRole
 #   - add test scope: csap-roles-scope
@@ -99,24 +99,45 @@ spring:
 
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          # issuer-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
+          jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
       client:
         registration:
-          keycloak:
+          keycloak-provider:
             client-id: ${oauthClientId:csap}
             client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
-            clientName: Keycloak
-            authorization-grant-type: authorization_code
+            clientName: KeycloakUser
+            authorization-grant-type: authorization_code  # implicit client_credentials
             redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
             scope:
               - openid
               - profile
               - email
               - csap-roles-scope
+#          keycloak-client:
+#            client-id: ${oauthClientId:csap}
+#            client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
+#            clientName: KeycloakClient
+#            authorization-grant-type:   # implicit client_credentials
+#            redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
+#            scope:
+#              - openid
+#              - profile
+#              - email
+#              - csap-roles-scope
         provider:
-          keycloak:
-            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/auth
-            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/token
-            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/userinfo
-            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/test/protocol/openid-connect/certs
+          keycloak-provider:
+            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/auth
+            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/token
+            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
+            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+          keycloak-client:
+            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/auth
+            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/token
+            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
+            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
             user-name-attribute: preferred_username
       
