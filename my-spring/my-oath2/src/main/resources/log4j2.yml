@@ -41,6 +41,15 @@ loggers:
       - ref: consoleAppender
       - ref : errorsAppender
         level: warn
+        
+  
+    - name: org.springframework.web.reactive.function.client
+      level: debug
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: info
   
     - name: org.keycloak
       level: info
@@ -100,6 +109,16 @@ loggers:
       - ref: consoleAppender
       - ref : errorsAppender
         level: warn
+      
+    - name: org.springframework.security.oauth2
+      level: debug
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+        
       
     - name: org.springframework.security
       level: info

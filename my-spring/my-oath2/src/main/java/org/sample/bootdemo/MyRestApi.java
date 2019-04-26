@@ -70,6 +70,16 @@ public class MyRestApi {
 				hi.put( "test authenticated",
 					ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_AUTHENTICATED_HI ).toUriString() ) ;
 				hi.put( "test open", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_OPEN_API_HI ).toUriString() ) ;
+
+				hi.put( "test webclient: specified", 
+					ServletUriComponentsBuilder.fromCurrentContextPath()
+					.path( WebClientController.URI_CLIENT_SELECTION_HI ).toUriString() ) ;
+				
+				hi.put( "test webclient: auto", 
+					ServletUriComponentsBuilder.fromCurrentContextPath()
+					.path( WebClientController.URI_AUTO_SELECTION_HI ).toUriString() ) ;
+				
+				
 				hi.put( "test anonymous", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_ANON_API_HI ).toUriString() ) ;
 				hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;
 				hi.put( "logout", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/logout" ).toUriString() ) ;
@@ -88,7 +98,7 @@ public class MyRestApi {
 	public JsonNode authorizedHi (
 									@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
-		var			location	= "secured-get" ;
+		var			location	= "authorized-get" ;
 
 		ObjectNode	hi			= buildApiResponse( customUser, location ) ;
 
@@ -121,7 +131,7 @@ public class MyRestApi {
 	public JsonNode authHi (
 								@AuthenticationPrincipal AbstractAuthenticationToken customUser ) {
 
-		var location = "anonymous-get" ;
+		var location = "authenticated-get" ;
 
 		return buildApiResponse( customUser, location ) ;
 	}

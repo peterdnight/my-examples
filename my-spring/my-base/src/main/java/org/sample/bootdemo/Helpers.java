@@ -1,5 +1,6 @@
 package org.sample.bootdemo ;
 
+import java.io.IOException ;
 import java.math.BigDecimal ;
 import java.math.RoundingMode ;
 import java.util.ArrayList ;
@@ -64,12 +65,23 @@ public class Helpers {
 		logger.info( "{}:\n {}", Thread.currentThread().getStackTrace()[2].getMethodName(), Helpers.jsonPrint( r ) ) ;
 	}
 
-	public static ObjectNode getDetails (
+	public static JsonNode getDetails (
 											Object theItem ) {
 
 		ObjectMapper jsonMapper = new ObjectMapper() ;
 		jsonMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false ) ;
-		ObjectNode jsonDetails = jsonMapper.convertValue( theItem, ObjectNode.class ) ;
+		
+		JsonNode jsonDetails =null ;
+		try {
+			if ( theItem instanceof String ) {
+				jsonDetails =  jsonMapper.readTree( (String) theItem ) ;
+			} else {
+				jsonDetails = jsonMapper.convertValue( theItem, ObjectNode.class ) ;
+			}
+		} catch ( Exception e ) {
+			logger.warn( buildSampleStack( e ) );
+		}
+		
 		logger.debug( "{}:\n {}", Thread.currentThread().getStackTrace()[2].getMethodName(), Helpers.jsonPrint( jsonDetails ) ) ;
 
 		return jsonDetails ;

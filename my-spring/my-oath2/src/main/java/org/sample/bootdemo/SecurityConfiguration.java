@@ -1,6 +1,7 @@
 package org.sample.bootdemo ;
 
 import java.util.ArrayList ;
+import java.util.Collection ;
 import java.util.HashSet ;
 import java.util.Map ;
 import java.util.Optional ;
@@ -16,6 +17,8 @@ import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty ;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties ;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider ;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration ;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration ;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration ;
 import org.springframework.boot.context.properties.ConfigurationProperties ;
@@ -23,14 +26,16 @@ import org.springframework.context.annotation.Bean ;
 import org.springframework.context.annotation.Configuration ;
 import org.springframework.context.annotation.Import ;
 import org.springframework.http.ResponseEntity ;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder ;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity ;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter ;
 import org.springframework.security.core.Authentication ;
 import org.springframework.security.core.GrantedAuthority ;
 import org.springframework.security.core.authority.SimpleGrantedAuthority ;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper ;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder ;
 import org.springframework.security.crypto.password.PasswordEncoder ;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken ;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService ;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken ;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo ;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser ;
@@ -63,7 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public static final String	USER			= "user" ;
 
 	boolean						enabled			= false ;
-	String						tokenClaimName		= "" ;
+	String						tokenClaimName	= "" ;
 
 	@Inject
 	ObjectMapper				jsonMapper ;
@@ -76,21 +81,26 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		String	claimInfo	= Helpers.padLine( "claim name" ) + getTokenClaimName() ;
 
-		String	regInfo		= oathProps.getRegistration().values().stream()
-			.map( registration -> {
-									StringBuilder p = new StringBuilder( Helpers.padLine( "Registration" ) ) ;
+		String	regInfo		= oathProps.getRegistration().keySet().stream()
+			.map( key -> {
+									Registration registration	= oathProps.getRegistration().get( key ) ;
+									StringBuilder p				= new StringBuilder( Helpers.padLine( "Registration" ) + key ) ;
 									p.append( Helpers.padLine( "Client ID" ) + registration.getClientId() ) ;
 									p.append( Helpers.padLine( "Client Name" ) + registration.getClientName() ) ;
 									p.append( Helpers.padLine( "Grant Type" ) + registration.getAuthorizationGrantType() ) ;
-									p.append( Helpers.padLine( "Scopes" ) + registration.getScope().toString() ) ;
+									if ( registration.getScope() != null ) {
+										p.append( Helpers.padLine( "Scopes" ) + registration.getScope().toString() ) ;
+									}
 									return p.toString() ;
 								} )
 			.collect( Collectors.joining( "\n" ) ) ;
 
-		String	propInfo	= oathProps.getProvider().values().stream()
-			.map( provider -> {
-									StringBuilder p = new StringBuilder( Helpers.padLine( "Provider" ) ) ;
+		String	propInfo	= oathProps.getProvider().keySet().stream()
+			.map( key -> {
+									Provider	provider	= oathProps.getProvider().get( key ) ;
+									StringBuilder p			= new StringBuilder( Helpers.padLine( "Provider: " ) + key ) ;
 									p.append( Helpers.padLine( "Auth uri" ) + provider.getAuthorizationUri() ) ;
+									p.append( Helpers.padLine( "Issuer uri" ) + provider.getIssuerUri() ) ;
 									return p.toString() ;
 								} )
 			.collect( Collectors.joining( "\n" ) ) ;
@@ -98,76 +108,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		logger.info( Helpers.header( claimInfo + "\n" + regInfo + "\n" + propInfo ) ) ;
 	}
 
-	private GrantedAuthoritiesMapper userOpenIdAuthoritiesMapper () {
-		return (
-					authorities ) -> {
-			Set<GrantedAuthority> mappedAuthorities = new HashSet<>() ;
-
-			authorities.forEach( authority -> {
-
-				logger.info( "authority: {}", authority ) ;
-				if ( OidcUserAuthority.class.isInstance( authority ) ) {
-					OidcUserAuthority	oidcUserAuthority	= (OidcUserAuthority) authority ;
-
-					OidcIdToken			idToken				= oidcUserAuthority.getIdToken() ;
-					OidcUserInfo		userInfo			= oidcUserAuthority.getUserInfo() ;
-
-					logger.info( "claims: {}", userInfo.getClaims() ) ;
-					// Map the claims found in idToken and/or userInfo
-					// to one or more GrantedAuthority's and add it to mappedAuthorities
-					Optional<String> csapClaims = userInfo.getClaims().keySet().stream()
-						.filter( claimKey -> claimKey.equals( getTokenClaimName() ) )
-						.findFirst() ;
-
-					if ( csapClaims.isPresent() ) {
-						logger.debug( "csapClaims: {}", csapClaims.get() ) ;
-						try {
-							logger.debug( "type: {} ", userInfo.getClaims().get( getTokenClaimName() ).getClass().getName() ) ;
-							ArrayList<String> claimRoles = (ArrayList<String>) userInfo.getClaims().get( getTokenClaimName() ) ;
-							claimRoles.stream()
-								.forEach( role -> {
-									logger.debug( "role: {}", role ) ;
-									mappedAuthorities.add( new SimpleGrantedAuthority( "ROLE_" + role ) ) ;
-								} ) ;
-
-						} catch ( Exception e ) {
-							logger.warn( "Failed to read roles: {}", Helpers.buildSampleStack( e ) ) ;
-						}
-					} else {
-						logger.warn( "No csap claims found" ) ;
-					}
-
-					SimpleGrantedAuthority csapAuthenticatedAuthority = new SimpleGrantedAuthority( "ROLE_" + AUTHENTICATED ) ;
-					mappedAuthorities.add( csapAuthenticatedAuthority ) ;
-
-				} else if ( OAuth2UserAuthority.class.isInstance( authority ) ) {
-					OAuth2UserAuthority	oauth2UserAuthority	= (OAuth2UserAuthority) authority ;
-
-					Map<String, Object>	userAttributes		= oauth2UserAuthority.getAttributes() ;
-					logger.info( "userAttributes: {}", userAttributes ) ;
-
-					// Map the attributes found in userAttributes
-					// to one or more GrantedAuthority's and add it to mappedAuthorities
-
-				}
-			} ) ;
-
-			return mappedAuthorities ;
-		} ;
-	}
-
 	// @Override
-	// protected void configure (
-	// final AuthenticationManagerBuilder auth )
-	// throws Exception {
-	//
-	// logger.info( "Adding in memory configuration..." ) ;
-	//
-	// auth.inMemoryAuthentication()
-	// .withUser( USER ).password( passwordEncoder().encode( USER ) ).roles( "USER" )
-	// .and()
-	// .withUser( ADMIN ).password( passwordEncoder().encode( ADMIN ) ).roles( "ADMIN" ) ;
-	// }
+	protected void configure (
+								final AuthenticationManagerBuilder auth )
+			throws Exception {
+
+		logger.info( Helpers.header( "Adding in memory configuration..." ) ) ;
+
+		auth.inMemoryAuthentication()
+			.withUser( "peter" ).password( passwordEncoder().encode( "peter" ) ).roles( "peter" )
+			.and()
+			.withUser( USER ).password( passwordEncoder().encode( USER ) ).roles( "USER" )
+			.and()
+			.withUser( ADMIN ).password( passwordEncoder().encode( ADMIN ) ).roles( "ADMIN" ) ;
+	}
 
 	@Inject
 	OpenIdLogoutHandler openIdLogoutHandler ;
@@ -186,21 +140,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 			.authorizeRequests()
 				.antMatchers( MyRestApi.URI_ANON_API_HI ).anonymous()
+				.antMatchers( WebClientController.URI_CLIENT_SELECTION_HI, WebClientController.URI_AUTO_SELECTION_HI ).permitAll()
 				.antMatchers( MyRestApi.URI_OPEN_API_HI ).permitAll()
 				.antMatchers( MyRestApi.URI_AUTHORIZED_HI ).hasRole( CSAP_VIEW )
-				.antMatchers( MyRestApi.URI_AUTHENTICATED_HI ).hasRole( AUTHENTICATED )
+				//.antMatchers( MyRestApi.URI_AUTHENTICATED_HI ).hasRole( AUTHENTICATED )
+				.antMatchers( MyRestApi.URI_AUTHENTICATED_HI ).authenticated()
 				.antMatchers( "/**" ).permitAll()
 				
 				.and()
 					.exceptionHandling()
 					.accessDeniedPage( MyRestApi.URI_ACCESS_DENIED )
 				
+				.and()
+					.formLogin()
+					
+				.and().oauth2ResourceServer().jwt().and()
+					
 				// https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#oauth2login-advanced-map-authorities
 				.and()
 					.oauth2Login()
 						.userInfoEndpoint()
-                			.userAuthoritiesMapper(this.userOpenIdAuthoritiesMapper())
+							//.customUserType( customUserType, WebClientConfig.KEYCLOAK_CLIENT_ROLE )
+                			.userAuthoritiesMapper( authorities  -> oathAuthoritiesMapper( authorities ))
                 			.and()
+                			
+				.and()
+        			.oauth2Client()
                 			
                 .and()
                 	.oauth2ResourceServer()
@@ -220,8 +185,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	}
 	// @formatter:on
-	
-	
 
 	@Bean
 	public PasswordEncoder passwordEncoder () {
@@ -254,15 +217,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 								Authentication authentication ) {
 			super.logout( request, response, authentication ) ;
 
-			if ( authentication != null ) {
-				propagateLogoutToKeycloak( (OidcUser) authentication.getPrincipal() ) ;
+			if ( authentication != null && (authentication instanceof OAuth2AuthenticationToken) ) {
+				logger.info( "Authentication type: {}", authentication.getClass().getName() ) ;
+				propagateLogoutToOauth2Provider( (OidcUser) authentication.getPrincipal() ) ;
 			} else {
 				logger.warn( "Ignoring logout attempt - authentication principle is null" ) ;
 			}
 		}
 
-		private void propagateLogoutToKeycloak (
-													OidcUser user ) {
+		private void propagateLogoutToOauth2Provider (
+														OidcUser user ) {
 
 			String					endSessionEndpoint	= user.getIssuer() + "/protocol/openid-connect/logout" ;
 
@@ -286,7 +250,82 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	public void setTokenClaimName (
-								String claimName ) {
+									String claimName ) {
 		this.tokenClaimName = claimName ;
 	}
+
+	/**
+	 * 
+	 * default role mapping in spring security is USER_ROLE and is hardcoded
+	 * 
+	 * - couple of options to set roles, but note it ALWAYS involves custom mappings
+	 * 
+	 * 
+	 * @Link https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#oauth2login-advanced-map-authorities-grantedauthoritiesmapper 
+	 * 
+	 * 
+	 * @see DefaultOAuth2UserService#loadUser(org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest)
+	 * 
+	 * @param authorities
+	 * @return
+	 */
+	private Collection<? extends GrantedAuthority> oathAuthoritiesMapper ( Collection<? extends GrantedAuthority> authorities ) {
+		Set<GrantedAuthority> mappedAuthorities = new HashSet<>() ;
+
+		authorities.forEach( authority -> {
+
+			logger.info( "authority: {}", authority ) ;
+
+//			SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority( authority.getAuthority() ) ;
+//			mappedAuthorities.add( grantedAuthority ) ;
+
+			if ( OidcUserAuthority.class.isInstance( authority ) ) {
+				OidcUserAuthority	oidcUserAuthority	= (OidcUserAuthority) authority ;
+
+				OidcIdToken			idToken				= oidcUserAuthority.getIdToken() ;
+				OidcUserInfo		userInfo			= oidcUserAuthority.getUserInfo() ;
+
+				logger.info( "claims: {}", userInfo.getClaims() ) ;
+				// Map the claims found in idToken and/or userInfo
+				// to one or more GrantedAuthority's and add it to mappedAuthorities
+				Optional<String> csapClaims = userInfo.getClaims().keySet().stream()
+					.filter( claimKey -> claimKey.equals( getTokenClaimName() ) )
+					.findFirst() ;
+
+				if ( csapClaims.isPresent() ) {
+					logger.debug( "csapClaims: {}", csapClaims.get() ) ;
+					try {
+						logger.debug( "type: {} ", userInfo.getClaims().get( getTokenClaimName() ).getClass().getName() ) ;
+						ArrayList<String> claimRoles = (ArrayList<String>) userInfo.getClaims().get( getTokenClaimName() ) ;
+						claimRoles.stream()
+							.forEach( role -> {
+								logger.debug( "role: {}", role ) ;
+								mappedAuthorities.add( new SimpleGrantedAuthority( "ROLE_" + role ) ) ;
+							} ) ;
+
+					} catch ( Exception e ) {
+						logger.warn( "Failed to read roles: {}", Helpers.buildSampleStack( e ) ) ;
+					}
+				} else {
+					logger.warn( "No csap claims found" ) ;
+				}
+
+				SimpleGrantedAuthority csapAuthenticatedAuthority = new SimpleGrantedAuthority( "ROLE_" + AUTHENTICATED ) ;
+				mappedAuthorities.add( csapAuthenticatedAuthority ) ;
+
+			} else if ( OAuth2UserAuthority.class.isInstance( authority ) ) {
+				OAuth2UserAuthority	oauth2UserAuthority	= (OAuth2UserAuthority) authority ;
+
+				Map<String, Object>	userAttributes		= oauth2UserAuthority.getAttributes() ;
+				logger.info( "userAttributes: {}", userAttributes ) ;
+
+				// Map the attributes found in userAttributes
+				// to one or more GrantedAuthority's and add it to mappedAuthorities
+
+			}
+		} ) ;
+
+		return mappedAuthorities ;
+	}
+
 }
