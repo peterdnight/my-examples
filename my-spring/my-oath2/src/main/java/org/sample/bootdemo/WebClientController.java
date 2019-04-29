@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletRequest ;
 import org.apache.commons.lang3.StringUtils ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
-import org.springframework.stereotype.Controller ;
-import org.springframework.ui.Model ;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty ;
 import org.springframework.web.bind.annotation.GetMapping ;
 import org.springframework.web.bind.annotation.RestController ;
 import org.springframework.web.reactive.function.client.WebClient ;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 import com.fasterxml.jackson.databind.node.ObjectNode ;
 
 @RestController
+@ConditionalOnProperty ( value = "my-examples.security.enabled" )
 public class WebClientController {
 
 	Logger						logger					= LoggerFactory.getLogger( getClass() ) ;

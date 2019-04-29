@@ -64,14 +64,20 @@ info:
 # security setup:
 #   - deploy keycloak via docker
 #   - add test realm:  csap-default
+#     - add service client: csap-sevice
+#         - roles: ViewRole, AdminRole, BuildRole, InfraRole
+#         - enable service account, add service account roles for client (all of the above)
+#     - add UI client: csap-ui
 #   - add test user: testuser,testpass
 #   - add test client: csap, with test roles: ViewRole
 #   - add test scope: csap-roles-scope
 #     - set token name: csap-claim-name
 #
-my-examples.security:
-  enabled: true
-  token-claim-name: "csap-claim-name"
+my-examples:
+  security:
+    enabled: true
+    oath-user-token-name: "csap-service-claim"
+    oath-service-claim-name: "csap-service"
 
 #
 #  Core Spring
@@ -106,7 +112,7 @@ spring:
       
         registration:
         
-          keycloak-with-login:
+          keycloak-user-auth:
             client-id: csap-ui
             client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
             clientName: "Keycloak: User authentication and Authorization"
@@ -122,7 +128,7 @@ spring:
           #
           # Requires keycloak service role enabled
           #
-          keycloak-client-role:
+          keycloak-service-auth:
             client-id: csap-service
             client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
             clientName: "Keycloak: client_credentials"
@@ -133,11 +139,10 @@ spring:
               - profile
               - email
               - csap-roles-scope
-              - app-yml
 #            
         provider:
         
-          keycloak-with-login:
+          keycloak-user-auth:
             authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/auth
             token-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/token
             user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
@@ -145,7 +150,7 @@ spring:
             user-name-attribute: preferred_username
             
             
-          keycloak-client-role:
+          keycloak-service-auth:
             issuer-uri: http://csap-dev01.lab.sensus.net:8090/auth/realms/csap-default
       
       

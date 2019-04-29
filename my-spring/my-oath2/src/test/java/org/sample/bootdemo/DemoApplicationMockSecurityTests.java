@@ -128,7 +128,8 @@ public class DemoApplicationMockSecurityTests {
 
 		Helpers.printDetails( response ) ;
 
-		assertThat( response.getRedirectedUrl() ).isEqualTo( "http://localhost/oauth2/authorization/keycloak-with-login" ) ;
+		//assertThat( response.getRedirectedUrl() ).isEqualTo( "http://localhost/oauth2/authorization/keycloak-with-login" ) ;
+		assertThat( response.getRedirectedUrl() ).isEqualTo( "http://localhost/login" ) ;
 
 	}
 
