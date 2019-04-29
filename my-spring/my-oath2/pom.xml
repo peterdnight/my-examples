@@ -9,7 +9,7 @@
 		<artifactId>my-base-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
+	</parent> 
 
 	<artifactId>my-oath2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -48,12 +48,6 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter</artifactId>
 				</exclusion>
-<!-- 				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>
-						spring-boot-starter-reactor-netty
-					</artifactId>
-				</exclusion> -->
 			</exclusions>
 		</dependency>
 
