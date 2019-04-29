@@ -81,7 +81,7 @@ loggers:
       - ref : errorsAppender
          
     - name: org.springframework.boot.autoconfigure.logging
-      level: debug 
+      level: info 
       additivity: false
       AppenderRef:  
       - ref: consoleAppender

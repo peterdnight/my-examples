@@ -1,6 +1,8 @@
 
 package org.sample.bootdemo ;
 
+import javax.inject.Inject ;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty ;
 import org.springframework.context.annotation.Bean ;
 import org.springframework.context.annotation.Configuration ;
@@ -13,7 +15,8 @@ import org.springframework.web.reactive.function.client.WebClient ;
 @ConditionalOnProperty ( value = "my-examples.security.enabled" )
 public class WebClientConfig {
 
-	public static final String KEYCLOAK_CLIENT_ROLE = "keycloak-service-auth" ;
+	@Inject 
+	SecurityConfiguration securityConfig ;
 
 	@Bean
 	WebClient webClient (	ClientRegistrationRepository clientRegistrationRepository,
@@ -23,7 +26,7 @@ public class WebClientConfig {
 			clientRegistrationRepository, authorizedClientRepository ) ;
 
 		oauth2.setDefaultOAuth2AuthorizedClient( true ) ;
-		oauth2.setDefaultClientRegistrationId( KEYCLOAK_CLIENT_ROLE );
+		oauth2.setDefaultClientRegistrationId( securityConfig.getOathClientServiceName() );
 
 		return WebClient.builder()
 			.apply( oauth2.oauth2Configuration() )

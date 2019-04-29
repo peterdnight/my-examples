@@ -79,6 +79,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	boolean						enabled					= false ;
 	String						oathUserTokenName		= "not-specified" ;
 	String						oathServiceClaimName	= "not-specified" ;
+	String						oathClientServiceName	= "not-specified" ;
 
 	@Inject
 	ObjectMapper				jsonMapper ;
@@ -90,7 +91,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void showConfiguration () {
 
 		String	claimInfo	= Helpers.padLine( "user authorities token" ) + getOathUserTokenName()
-				+ Helpers.padLine( "oath service claim" ) + getOathServiceClaimName() ;
+				+ Helpers.padLine( "oath service claim" ) + getOathServiceClaimName()
+				+ Helpers.padLine( "oath service client name" ) + getOathClientServiceName() ;
 
 		String	regInfo		= oathProps.getRegistration().keySet().stream()
 			.map( key -> {
@@ -389,6 +391,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	public void setOathServiceClaimName ( String oathServiceClaimName ) {
 		this.oathServiceClaimName = oathServiceClaimName ;
+	}
+
+	public String getOathClientServiceName () {
+		return oathClientServiceName ;
+	}
+
+	public void setOathClientServiceName ( String oathClientServiceName ) {
+		this.oathClientServiceName = oathClientServiceName ;
 	}
 
 }

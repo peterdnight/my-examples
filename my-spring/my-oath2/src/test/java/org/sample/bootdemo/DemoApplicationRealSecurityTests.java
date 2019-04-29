@@ -2,10 +2,9 @@ package org.sample.bootdemo ;
 
 import static org.assertj.core.api.Assertions.assertThat ;
 
-import java.util.Collections ;
-
 import javax.inject.Inject ;
 
+import org.junit.jupiter.api.Assumptions ;
 import org.junit.jupiter.api.BeforeAll ;
 import org.junit.jupiter.api.DisplayName ;
 import org.junit.jupiter.api.Test ;
@@ -22,16 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest ;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment ;
 import org.springframework.boot.test.web.client.TestRestTemplate ;
 import org.springframework.boot.web.server.LocalServerPort ;
-import org.springframework.http.HttpHeaders ;
-import org.springframework.http.HttpStatus ;
 import org.springframework.http.ResponseEntity ;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient ;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService ;
 import org.springframework.security.oauth2.client.registration.ClientRegistration ;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository ;
-import org.springframework.security.oauth2.core.OAuth2AccessToken ;
 import org.springframework.test.context.ActiveProfiles ;
 
+import com.fasterxml.jackson.databind.JsonNode ;
 import com.fasterxml.jackson.databind.ObjectMapper ;
 import com.fasterxml.jackson.databind.node.ObjectNode ;
 
@@ -55,6 +51,12 @@ class DemoApplicationRealSecurityTests {
 	MyRestApi						myRestApi ;
 
 	@Inject
+	WebClientController				webClientController ;
+
+	@Inject
+	SecurityConfiguration			securityConfig ;
+
+	@Inject
 	TestRestTemplate				testRestTemplate ;
 
 	@Inject
@@ -75,42 +77,49 @@ class DemoApplicationRealSecurityTests {
 	void contextLoads () {}
 
 	@Test
-	@DisplayName ( "keycloak api: access token" )
-	void verifyAccessToken () {
+	@DisplayName ( "oauth api: service client authentication and authorization" )
+	void verifyServiceLoginAndAccess ()
+			throws Exception {
 
 		logger.info( Helpers.testHeader() ) ;
-		
-		
-		ClientRegistration clientReg = clientRegistrationRepository.findByRegistrationId( "keycloak" ) ;
-		assertThat( clientReg ).isNotNull() ;
-		
-		logger.info( "auth uri: {} ", clientReg.getProviderDetails().getAuthorizationUri() ) ;
-		assertThat( clientReg.getProviderDetails().getAuthorizationUri() ).endsWith( "/auth/realms/test/protocol/openid-connect/auth" ) ; 
-		
-		OAuth2AccessToken token;
-		
 
-		OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient( "keycloak", "peter" ) ;
-		assertThat( authorizedClient ).isNotNull() ;
+		String						simpleUrl				= "http://localhost:" + testPort + WebClientController.URI_AUTO_SELECTION_HI ;
+		ResponseEntity<ObjectNode>	restTemplateResponse	= testRestTemplate
+			.getForEntity(
+				simpleUrl,
+				ObjectNode.class ) ;
 
-		OAuth2AccessToken accessToken = authorizedClient.getAccessToken() ;
-
-		logger.info( "accessToken: {}", accessToken ) ;
-		// restTemplate.getInterceptors().add(getBearerTokenInterceptor(accessToken.getTokenValue()));
-		//
-		// return restTemplate
-		// .exchange("https://school-service/class", HttpMethod.GET, null,
-		// new ParameterizedTypeReference<List<TeachingClassDto>>() {});
-
-		// AccessTokenResponse accessResponse = getAccessToken() ;
-		//
-		// Helpers.printDetails( accessResponse ) ;
-		//
-		// assertThat( accessResponse.getExpiresIn() ).isGreaterThan( 10 ) ;
+		JsonNode					webClientResponse		= restTemplateResponse.getBody() ;
+		logger.info( "webClientResponse: {}", Helpers.jsonPrint( webClientResponse ) ) ;
+		assertThat( webClientResponse.at( "/response/message" ).asText() ).isEqualTo( "authenticated-get" ) ;
 
 	}
-	
-	
+
+	@Test
+	@DisplayName ( "oauth api: user authentication and authorization" )
+	void verifyUserLoginAndAccess ()
+			throws Exception {
+
+		logger.info( Helpers.testHeader() ) ;
+
+		Assumptions.assumeTrue( false, "User flows not tested" ) ;
+
+	}
+
+	@Test
+	@DisplayName ( "oauth api: clientRegistration and provider details" )
+	void verifyOathClientRegistration () {
+
+		logger.info( Helpers.testHeader() ) ;
+
+		ClientRegistration clientReg = clientRegistrationRepository.findByRegistrationId( securityConfig.getOathClientServiceName() ) ;
+		assertThat( clientReg ).isNotNull() ;
+
+		logger.info( "auth uri: {} ", clientReg.getProviderDetails().getAuthorizationUri() ) ;
+		assertThat( clientReg.getProviderDetails().getAuthorizationUri() )
+			.endsWith( "/auth/realms/csap-default/protocol/openid-connect/auth" ) ;
+
+	}
 
 	// @Test
 	// @DisplayName ( "secure endpoint access via authz token" )

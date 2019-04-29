@@ -78,6 +78,8 @@ my-examples:
     enabled: true
     oath-user-token-name: "csap-service-claim"
     oath-service-claim-name: "csap-service"
+    oath-client-service-name: "keycloak-service-auth"
+    
 
 #
 #  Core Spring
@@ -108,6 +110,7 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
+          
       client:
       
         registration:

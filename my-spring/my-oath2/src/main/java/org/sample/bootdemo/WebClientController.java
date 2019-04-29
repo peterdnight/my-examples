@@ -5,6 +5,7 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 
 import java.io.IOException ;
 
+import javax.inject.Inject ;
 import javax.servlet.http.HttpServletRequest ;
 
 import org.apache.commons.lang3.StringUtils ;
@@ -25,6 +26,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode ;
 public class WebClientController {
 
 	Logger						logger					= LoggerFactory.getLogger( getClass() ) ;
+	
+
+	@Inject 
+	SecurityConfiguration securityConfig ;
 
 	private final static String	URI_WEBCLIENT			= "/webclient" ;
 	private final static String	URI_HI					= "/hi" ;
@@ -71,12 +76,12 @@ public class WebClientController {
 		return result ;
 	}
 
-	public String getContentUsingWebClient ( String source ) {
+	public String getContentUsingWebClient ( String targetUrl ) {
 
 		String body = this.webClient
 			.get()
-			.uri( source )
-			.attributes( clientRegistrationId( WebClientConfig.KEYCLOAK_CLIENT_ROLE ) )
+			.uri( targetUrl )
+			.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
 			.retrieve()
 			.bodyToMono( String.class )
 			.block() ;
