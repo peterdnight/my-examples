@@ -67,6 +67,7 @@ info:
 #     - add service client: csap-sevice
 #         - roles: ViewRole, AdminRole, BuildRole, InfraRole
 #         - enable service account, add service account roles for client (all of the above)
+#         - update the client credential (oathSecret) and oathHostUrl environment variables
 #     - add UI client: csap-ui
 #   - add test user: testuser,testpass
 #   - add test client: csap, with test roles: ViewRole
