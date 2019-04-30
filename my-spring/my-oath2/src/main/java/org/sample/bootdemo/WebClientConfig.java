@@ -79,24 +79,5 @@ public class WebClientConfig {
 			.build() ;
 
 	}
-	
-//	public class WebClientSecurityCustomizer implements WebClientCustomizer {
-//
-//		private ServerOAuth2AuthorizedClientExchangeFilterFunction securityExchangeFilterFunction;
-//
-//		public WebClientSecurityCustomizer(
-//				ServerOAuth2AuthorizedClientExchangeFilterFunction securityExchangeFilterFunction) {
-//			this.securityExchangeFilterFunction = securityExchangeFilterFunction;
-//		}
-//
-//		@Override
-//		public void customize(WebClient.Builder webClientBuilder) {
-//			// Add security exchange filter function to Builder filters list
-//			webClientBuilder.filters((filterFunctions) -> {
-//				if (!filterFunctions.contains(this.securityExchangeFilterFunction)) {
-//					filterFunctions.add(0, this.securityExchangeFilterFunction);
-//				}
-//			});
-//		}
-//	}
+
 }
