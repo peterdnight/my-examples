@@ -33,19 +33,22 @@ public class WebClientController {
 
 	private final static String	URI_WEBCLIENT			= "/webclient" ;
 	private final static String	URI_HI					= "/hi" ;
-	public final static String	URI_CLIENT_SELECTION_HI	= URI_WEBCLIENT + URI_HI + "/client" ;
-	public final static String	URI_AUTO_SELECTION_HI	= URI_WEBCLIENT + URI_HI + "/auto" ;
+	public final static String	URI_CLIENT_SELECTION_HI	= URI_WEBCLIENT + URI_HI + "/user/specific-client" ;
+	public final static String	URI_AUTO_SELECTION_HI	= URI_WEBCLIENT + URI_HI + "/user/auto-client" ;
+	public final static String	URI_ANONYMOUS_SELECTION_HI	= URI_WEBCLIENT + URI_HI + "/machine" ;
 
-	private final WebClient		webClient ;
+	private final WebClient		webClientUser ;
+	private final WebClient		webClientService ;
 
 	private final String		uri ;
 	private final ObjectMapper	jsonMapper ;
 
-	public WebClientController( WebClient webClient, MyRestApi myRestApi, ObjectMapper jsonMapper ) {
+	public WebClientController( WebClient webClientUser, WebClient webClientService, MyRestApi myRestApi, ObjectMapper jsonMapper ) {
 
 		logger.info( Helpers.header( "uri: {}" ), myRestApi.URI_AUTHENTICATED_HI ) ;
 
-		this.webClient	= webClient ;
+		this.webClientUser	= webClientUser ;
+		this.webClientService	= webClientService ;
 		this.uri		= myRestApi.URI_AUTHENTICATED_HI ;
 		this.jsonMapper	= jsonMapper ;
 	}
@@ -62,7 +65,14 @@ public class WebClientController {
 		result.put( "web client target", targetUrl ) ;
 		try {
 
-			String body = getContentUsingWebClient( targetUrl ) ;
+			String body = this.webClientUser
+					.get()
+					.uri( targetUrl )
+					.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
+					.retrieve()
+					.bodyToMono( String.class )
+					.block() ;
+
 
 			logger.info( "uri: {}, \n\n body(first 20): {}", uri, StringUtils.substring( body, 0, 20 ) ) ;
 
@@ -76,18 +86,6 @@ public class WebClientController {
 		return result ;
 	}
 
-	public String getContentUsingWebClient ( String targetUrl ) {
-
-		String body = this.webClient
-			.get()
-			.uri( targetUrl )
-			.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
-			.retrieve()
-			.bodyToMono( String.class )
-			.block() ;
-
-		return body ;
-	}
 
 	// this picks the "default" client
 	@GetMapping ( URI_AUTO_SELECTION_HI )
@@ -102,7 +100,7 @@ public class WebClientController {
 		result.put( "web client target", targetUrl ) ;
 		try {
 
-			String body = this.webClient
+			String body = this.webClientUser
 					.get()
 					.uri( targetUrl )
 					.retrieve()
@@ -120,5 +118,40 @@ public class WebClientController {
 
 		return result ;
 
+	}
+	
+
+
+	@GetMapping ( URI_ANONYMOUS_SELECTION_HI )
+	public JsonNode hiUsingAnonymousClient ()
+			throws IOException {
+
+		ObjectNode	result		= jsonMapper.createObjectNode() ;
+
+		String		targetUrl	= ServletUriComponentsBuilder.fromCurrentContextPath().path( this.uri ).toUriString() ;
+		logger.info( "targetUrl: {}", targetUrl ) ;
+
+		result.put( "web client target", targetUrl ) ;
+		try {
+
+			String body = this.webClientService
+					.get()
+					.uri( targetUrl )
+					.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
+					.retrieve()
+					.bodyToMono( String.class )
+					.block() ;
+
+
+			logger.info( "uri: {}, \n\n body(first 20): {}", uri, StringUtils.substring( body, 0, 20 ) ) ;
+
+			result.set( "response", jsonMapper.readTree( body ) ) ;
+		} catch ( Exception e ) {
+			
+			result.put( "response", Helpers.buildSampleStack( e ) ) ;
+			logger.warn(  Helpers.buildSampleStack( e ) );
+		}
+
+		return result ;
 	}
 }

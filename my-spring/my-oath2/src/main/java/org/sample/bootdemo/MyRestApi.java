@@ -79,6 +79,10 @@ public class MyRestApi {
 					ServletUriComponentsBuilder.fromCurrentContextPath()
 					.path( WebClientController.URI_AUTO_SELECTION_HI ).toUriString() ) ;
 				
+				hi.put( "test webclient: machine", 
+					ServletUriComponentsBuilder.fromCurrentContextPath()
+					.path( WebClientController.URI_ANONYMOUS_SELECTION_HI ).toUriString() ) ;
+				
 				
 				hi.put( "test anonymous", ServletUriComponentsBuilder.fromCurrentContextPath().path( URI_ANON_API_HI ).toUriString() ) ;
 				hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;

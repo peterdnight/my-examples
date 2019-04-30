@@ -208,7 +208,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 				Collection<GrantedAuthority> myAuthorities = null ;
 
-				logger.info( "jwt: audience: {}, \n claims: {}", jwt.getAudience(), jwt.getClaims() ) ;
+				logger.debug( "jwt: audience: {}, \n claims: {}", jwt.getAudience(), jwt.getClaims() ) ;
 
 				try {
 					Map<String, Object>	resourceClaims		= jwt.getClaimAsMap( "resource_access" ) ;

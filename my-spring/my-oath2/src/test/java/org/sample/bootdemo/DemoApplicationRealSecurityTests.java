@@ -22,10 +22,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment ;
 import org.springframework.boot.test.web.client.TestRestTemplate ;
 import org.springframework.boot.web.server.LocalServerPort ;
 import org.springframework.http.ResponseEntity ;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient ;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService ;
 import org.springframework.security.oauth2.client.registration.ClientRegistration ;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository ;
 import org.springframework.test.context.ActiveProfiles ;
+import org.springframework.web.reactive.function.client.WebClient ;
 
 import com.fasterxml.jackson.databind.JsonNode ;
 import com.fasterxml.jackson.databind.ObjectMapper ;
@@ -54,6 +56,9 @@ class DemoApplicationRealSecurityTests {
 	WebClientController				webClientController ;
 
 	@Inject
+	WebClient						webClientService ;
+
+	@Inject
 	SecurityConfiguration			securityConfig ;
 
 	@Inject
@@ -77,21 +82,50 @@ class DemoApplicationRealSecurityTests {
 	void contextLoads () {}
 
 	@Test
-	@DisplayName ( "oauth api: service client authentication and authorization" )
-	void verifyServiceLoginAndAccess ()
+	@DisplayName ( "oauth api: service client using http context" )
+	void verifyServiceApiUsingClientContext ()
 			throws Exception {
 
 		logger.info( Helpers.testHeader() ) ;
 
 		String						simpleUrl				= "http://localhost:" + testPort + WebClientController.URI_AUTO_SELECTION_HI ;
+		
+
+		Helpers.setLogToDebug( WebClient.class.getPackageName() ) ;
 		ResponseEntity<ObjectNode>	restTemplateResponse	= testRestTemplate
 			.getForEntity(
 				simpleUrl,
 				ObjectNode.class ) ;
+		Helpers.setLogToInfo( WebClient.class.getPackageName()  ) ;
 
 		JsonNode					webClientResponse		= restTemplateResponse.getBody() ;
-		logger.info( "webClientResponse: {}", Helpers.jsonPrint( webClientResponse ) ) ;
+		logger.debug( "webClientResponse: {}", Helpers.jsonPrint( webClientResponse ) ) ;
 		assertThat( webClientResponse.at( "/response/message" ).asText() ).isEqualTo( "authenticated-get" ) ;
+
+	}
+
+	@Test
+	@DisplayName ( "oauth api: service client direct" )
+	void verifyServiceApiUsingAnonymousContext ()
+			throws Exception {
+
+		logger.info( Helpers.testHeader() ) ;
+
+		String simpleUrl = "http://localhost:" + testPort + myRestApi.URI_AUTHENTICATED_HI ;
+
+		// String webClientResponse = webClientController.getContentUsingWebClient( myRestApi.URI_AUTHENTICATED_HI );
+
+		Helpers.setLogToDebug( WebClient.class.getPackageName() ) ;
+		ObjectNode webClientBody = webClientService
+			.get()
+			.uri( simpleUrl )
+			// .attributes( oauth2AuthorizedClient(securityConfig.getOathClientServiceName()))
+			.retrieve()
+			.bodyToMono( ObjectNode.class ).block() ;
+		Helpers.setLogToInfo( WebClient.class.getPackageName()  ) ;
+
+		logger.debug( "webClientResponse: {}", Helpers.jsonPrint( webClientBody ) ) ;
+		assertThat( webClientBody.at( "/message" ).asText() ).isEqualTo( "authenticated-get" ) ;
 
 	}
 
