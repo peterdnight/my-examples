@@ -34,7 +34,7 @@ public class WebClientConfig {
 			clientRegistrationRepository, authorizedClientRepository ) ;
 
 		//oauth2.setDefaultOAuth2AuthorizedClient( true ) ;
-		oauth2.setDefaultClientRegistrationId( securityConfig.getOathClientServiceName() );
+		oauth2.setDefaultClientRegistrationId( securityConfig.getOauthClientServiceName() );
 
 		return WebClient.builder()
 			.apply( oauth2.oauth2Configuration() )
@@ -71,7 +71,7 @@ public class WebClientConfig {
 
 
 		//oauth2.setDefaultOAuth2AuthorizedClient( true ) ;
-		oauth2Filter.setDefaultClientRegistrationId( securityConfig.getOathClientServiceName() );
+		oauth2Filter.setDefaultClientRegistrationId( securityConfig.getOauthClientServiceName() );
 
 
 		return WebClient.builder()

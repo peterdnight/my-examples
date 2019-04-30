@@ -1,6 +1,10 @@
 package org.sample.bootdemo ;
 
+import java.net.URI ;
+import java.nio.charset.Charset ;
 import java.util.ArrayList ;
+import java.util.Arrays ;
+import java.util.Base64 ;
 import java.util.Collection ;
 import java.util.HashSet ;
 import java.util.Map ;
@@ -15,6 +19,7 @@ import javax.servlet.http.HttpServletResponse ;
 
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
+import org.springframework.beans.factory.annotation.Autowired ;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty ;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties ;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider ;
@@ -27,7 +32,12 @@ import org.springframework.context.annotation.Bean ;
 import org.springframework.context.annotation.Configuration ;
 import org.springframework.context.annotation.Import ;
 import org.springframework.core.convert.converter.Converter ;
+import org.springframework.http.HttpEntity ;
+import org.springframework.http.HttpHeaders ;
+import org.springframework.http.HttpStatus ;
+import org.springframework.http.MediaType ;
 import org.springframework.http.ResponseEntity ;
+import org.springframework.http.converter.FormHttpMessageConverter ;
 import org.springframework.security.authentication.AbstractAuthenticationToken ;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder ;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity ;
@@ -38,7 +48,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority ;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder ;
 import org.springframework.security.crypto.password.PasswordEncoder ;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken ;
+import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler ;
+import org.springframework.security.oauth2.client.registration.ClientRegistration ;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository ;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService ;
+import org.springframework.security.oauth2.core.OAuth2AccessToken ;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse ;
+import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter ;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken ;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo ;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser ;
@@ -47,6 +63,8 @@ import org.springframework.security.oauth2.core.user.OAuth2UserAuthority ;
 import org.springframework.security.oauth2.jwt.Jwt ;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter ;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler ;
+import org.springframework.util.LinkedMultiValueMap ;
+import org.springframework.util.MultiValueMap ;
 import org.springframework.web.client.RestTemplate ;
 import org.springframework.web.util.UriComponentsBuilder ;
 
@@ -63,36 +81,39 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 		OAuth2ResourceServerAutoConfiguration.class } )
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private static final String	ROLE					= "ROLE_" ;
+	private static final String		ROLE					= "ROLE_" ;
 
-	Logger						logger					= LoggerFactory.getLogger( getClass() ) ;
+	Logger							logger					= LoggerFactory.getLogger( getClass() ) ;
 
 	// https://www.keycloak.org/docs/latest/securing_apps/index.html
 
-	public static final String	CSAP_VIEW				= "ViewRole" ;
-	public static final String	AUTHENTICATED			= "AUTHENTICATED" ;
+	public static final String		CSAP_VIEW				= "ViewRole" ;
+	public static final String		AUTHENTICATED			= "AUTHENTICATED" ;
 
-	public static final String	ADMIN					= "admin" ;
+	public static final String		ADMIN					= "admin" ;
 
-	public static final String	USER					= "user" ;
+	public static final String		USER					= "user" ;
 
-	boolean						enabled					= false ;
-	String						oathUserTokenName		= "not-specified" ;
-	String						oathServiceClaimName	= "not-specified" ;
-	String						oathClientServiceName	= "not-specified" ;
-
-	@Inject
-	ObjectMapper				jsonMapper ;
+	boolean							enabled					= false ;
+	String							oauthUserTokenName		= "not-specified" ;
+	String							oauthServiceClaimName	= "not-specified" ;
+	String							oauthClientServiceName	= "not-specified" ;
 
 	@Inject
-	OAuth2ClientProperties		oathProps ;
+	ObjectMapper					jsonMapper ;
+
+	@Inject
+	OAuth2ClientProperties			oathProps ;
+
+	@Autowired
+	ClientRegistrationRepository	clientRegistrationRepository ;
 
 	@PostConstruct
 	public void showConfiguration () {
 
-		String	claimInfo	= Helpers.padLine( "user authorities token" ) + getOathUserTokenName()
-				+ Helpers.padLine( "oath service claim" ) + getOathServiceClaimName()
-				+ Helpers.padLine( "oath service client name" ) + getOathClientServiceName() ;
+		String	claimInfo	= Helpers.padLine( "user authorities token" ) + getOauthUserTokenName()
+				+ Helpers.padLine( "oath service claim" ) + getOauthServiceClaimName()
+				+ Helpers.padLine( "oath service client name" ) + getOauthClientServiceName() ;
 
 		String	regInfo		= oathProps.getRegistration().keySet().stream()
 			.map( key -> {
@@ -302,13 +323,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	public String getOathUserTokenName () {
-		return oathUserTokenName ;
+	public String getOauthUserTokenName () {
+		return oauthUserTokenName ;
 	}
 
-	public void setOathUserTokenName (
+	public void setOauthUserTokenName (
 										String claimName ) {
-		this.oathUserTokenName = claimName ;
+		this.oauthUserTokenName = claimName ;
 	}
 
 	/**
@@ -346,14 +367,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// Map the claims found in idToken and/or userInfo
 				// to one or more GrantedAuthority's and add it to mappedAuthorities
 				Optional<String> csapClaims = userInfo.getClaims().keySet().stream()
-					.filter( claimKey -> claimKey.equals( getOathUserTokenName() ) )
+					.filter( claimKey -> claimKey.equals( getOauthUserTokenName() ) )
 					.findFirst() ;
 
 				if ( csapClaims.isPresent() ) {
 					logger.debug( "csapClaims: {}", csapClaims.get() ) ;
 					try {
-						logger.debug( "type: {} ", userInfo.getClaims().get( getOathUserTokenName() ).getClass().getName() ) ;
-						ArrayList<String> claimRoles = (ArrayList<String>) userInfo.getClaims().get( getOathUserTokenName() ) ;
+						logger.debug( "type: {} ", userInfo.getClaims().get( getOauthUserTokenName() ).getClass().getName() ) ;
+						ArrayList<String> claimRoles = (ArrayList<String>) userInfo.getClaims().get( getOauthUserTokenName() ) ;
 						claimRoles.stream()
 							.forEach( role -> {
 								logger.debug( "role: {}", role ) ;
@@ -385,20 +406,72 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return mappedAuthorities ;
 	}
 
-	public String getOathServiceClaimName () {
-		return oathServiceClaimName ;
+	public String getOauthServiceClaimName () {
+		return oauthServiceClaimName ;
 	}
 
-	public void setOathServiceClaimName ( String oathServiceClaimName ) {
-		this.oathServiceClaimName = oathServiceClaimName ;
+	public void setOauthServiceClaimName ( String oathServiceClaimName ) {
+		this.oauthServiceClaimName = oathServiceClaimName ;
 	}
 
-	public String getOathClientServiceName () {
-		return oathClientServiceName ;
+	public String getOauthClientServiceName () {
+		return oauthClientServiceName ;
 	}
 
-	public void setOathClientServiceName ( String oathClientServiceName ) {
-		this.oathClientServiceName = oathClientServiceName ;
+	public void setOauthClientServiceName ( String oathClientServiceName ) {
+		this.oauthClientServiceName = oathClientServiceName ;
+	}
+
+	public OAuth2AccessToken getAccessTokenForOauthServiceClient () {
+
+		ClientRegistration	clientReg		= clientRegistrationRepository.findByRegistrationId( getOauthClientServiceName() ) ;
+
+		// Setup the restTemplate
+		RestTemplate		restTemplate	= new RestTemplate(
+			Arrays.asList( new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter() ) ) ;
+		restTemplate.setErrorHandler( new OAuth2ErrorResponseErrorHandler() ) ;
+
+		// Set the headers
+		HttpHeaders headers = new HttpHeaders() ;
+		headers.add( HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE ) ;
+		headers.setContentType( MediaType.APPLICATION_FORM_URLENCODED ) ;
+		String	auth		= clientReg.getClientId() + ":" + clientReg.getClientSecret() ;
+
+		String	authHeader	= "Basic "
+				+ new String( Base64.getEncoder().encode( auth.getBytes( Charset.forName( "US-ASCII" ) ) ) ) ;
+
+		headers.add( HttpHeaders.AUTHORIZATION, authHeader ) ;
+
+		// Set the grant type parameter
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<>() ;
+		map.add( "grant_type", "client_credentials" ) ;
+		map.add( "client_id", clientReg.getClientId() ) ;
+		map.add( "client_secret", clientReg.getClientSecret() ) ;
+
+		logger.info( "client_id={} url={}",
+			clientReg.getClientId(),
+			clientReg.getProviderDetails().getTokenUri() ) ;
+
+		// Send the request
+		HttpEntity<MultiValueMap<String, String>>	request		= new HttpEntity<>( map, headers ) ;
+		ResponseEntity<OAuth2AccessTokenResponse>	response	=									//
+				restTemplate.postForEntity(
+					URI.create( clientReg.getProviderDetails().getTokenUri() ),
+					request,
+					OAuth2AccessTokenResponse.class ) ;
+
+		// Check the response and get the token
+		if ( response.getStatusCode() != HttpStatus.OK ) {
+			logger.error( "Error getting access token. Response={}", response.toString() ) ;
+			return null ;
+		}
+		OAuth2AccessTokenResponse tokenResponse = response.getBody() ;
+		if ( tokenResponse == null ) {
+			logger.error( "Error getting access token, null response body. Response={}", response.toString() ) ;
+			return null ;
+		}
+
+		return tokenResponse.getAccessToken() ;
 	}
 
 }

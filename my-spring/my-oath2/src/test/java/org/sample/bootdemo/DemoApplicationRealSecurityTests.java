@@ -2,6 +2,8 @@ package org.sample.bootdemo ;
 
 import static org.assertj.core.api.Assertions.assertThat ;
 
+import java.util.Collections ;
+
 import javax.inject.Inject ;
 
 import org.junit.jupiter.api.Assumptions ;
@@ -21,12 +23,16 @@ import org.springframework.boot.test.context.SpringBootTest ;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment ;
 import org.springframework.boot.test.web.client.TestRestTemplate ;
 import org.springframework.boot.web.server.LocalServerPort ;
+import org.springframework.http.HttpHeaders ;
+import org.springframework.http.HttpStatus ;
 import org.springframework.http.ResponseEntity ;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient ;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService ;
 import org.springframework.security.oauth2.client.registration.ClientRegistration ;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository ;
+import org.springframework.security.oauth2.core.OAuth2AccessToken ;
 import org.springframework.test.context.ActiveProfiles ;
+import org.springframework.web.client.RestTemplate ;
 import org.springframework.web.reactive.function.client.WebClient ;
 
 import com.fasterxml.jackson.databind.JsonNode ;
@@ -146,7 +152,7 @@ class DemoApplicationRealSecurityTests {
 
 		logger.info( Helpers.testHeader() ) ;
 
-		ClientRegistration clientReg = clientRegistrationRepository.findByRegistrationId( securityConfig.getOathClientServiceName() ) ;
+		ClientRegistration clientReg = clientRegistrationRepository.findByRegistrationId( securityConfig.getOauthClientServiceName() ) ;
 		assertThat( clientReg ).isNotNull() ;
 
 		logger.info( "auth uri: {} ", clientReg.getProviderDetails().getAuthorizationUri() ) ;
@@ -155,57 +161,66 @@ class DemoApplicationRealSecurityTests {
 
 	}
 
-	// @Test
-	// @DisplayName ( "secure endpoint access via authz token" )
-	// void verifySecureApiUsingAuthzClient () {
-	//
-	// String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_AUTHORIZED_HI ;
-	//
-	// logger.info( Helpers.testHeader( simpleUrl ) ) ;
-	//
-	// AccessTokenResponse accessResponse = getAccessToken() ;
-	//
-	// TestRestTemplate testRestTemplate = new TestRestTemplate() ;
-	// testRestTemplate.getRestTemplate().setInterceptors(
-	// Collections.singletonList( (
-	// request,
-	// body,
-	// execution ) -> {
-	// request.getHeaders()
-	// .add( "Authorization", "Bearer " + accessResponse.getToken() ) ;
-	// return execution.execute( request, body ) ;
-	// } ) ) ;
-	//
-	// ResponseEntity<ObjectNode> restTemplateResponse = testRestTemplate
-	// .getForEntity(
-	// simpleUrl,
-	// ObjectNode.class ) ;
-	//
-	// logger.info( "millis using spring rest template with bearer token: {}", restTemplateResponse.getBody().get( "millis" ) ) ;
-	//
-	// logger.debug( "{} response: {}", simpleUrl, Helpers.jsonPrint( Helpers.getDetails( restTemplateResponse ) ) ) ;
-	// logger.info( "{} response: {}", simpleUrl, Helpers.jsonPrint( Helpers.getDetails( restTemplateResponse.getBody() ) ) ) ;
-	//
-	// assertThat( restTemplateResponse.getStatusCode() ).isEqualTo( HttpStatus.OK ) ;
-	// assertThat( restTemplateResponse.getHeaders().get( HttpHeaders.SET_COOKIE ).toString() ).contains( "JSESSIONID" ) ;
-	// assertThat( restTemplateResponse.getBody().get( "message" ).asText() ).isEqualTo( "secured-get" ) ;
-	//
-	// }
 
-	// @Inject
-	// KeycloakSpringBootProperties keyProps ;
-	//
-	// private AccessTokenResponse getAccessToken () {
-	// Configuration c = new Configuration() ;
-	// c.setRealm( keyProps.getRealm() ) ;
-	// c.setAuthServerUrl( keyProps.getAuthServerUrl() ) ;
-	// c.setResource( keyProps.getResource() ) ;
-	// c.setCredentials( keyProps.getCredentials() );
-	// AuthzClient authzClient = AuthzClient.create( c ) ;
-	//
-	// // AuthzClient authzClient = AuthzClient.create() ;
-	// AccessTokenResponse accessResponse = authzClient.obtainAccessToken( "peter", "peter" ) ;
-	// return accessResponse ;
-	// }
+	@Test
+	@DisplayName ( "oauth api: access token" )
+	void verifyAccessTokenRetrieval () {
+
+		logger.info( Helpers.testHeader() ) ;
+		
+		OAuth2AccessToken token = securityConfig.getAccessTokenForOauthServiceClient() ;
+
+		//logger.info( "token: {}", token.getTokenValue() );
+		logger.info( "token: {}", Helpers.getDetails( token ) );
+
+		assertThat( token.getTokenType().getValue() ).isEqualTo( "Bearer" ) ;
+		assertThat( token.getScopes() ).contains( "csap-roles-scope" );
+
+	}
+
+
+
+	@Test
+	@DisplayName ( "oauth api: service client using rest template" )
+	void verifyApiUsingRestTemplate () {
+
+		logger.info( Helpers.testHeader() ) ;
+		
+		OAuth2AccessToken accessToken = securityConfig.getAccessTokenForOauthServiceClient() ;
+
+		//logger.info( "token: {}", token.getTokenValue() );
+		logger.info( "token: {}", Helpers.getDetails( accessToken ) );
+
+		assertThat( accessToken.getTokenType().getValue() ).isEqualTo( "Bearer" ) ;
+		assertThat( accessToken.getScopes() ).contains( "csap-roles-scope" );
+		
+		RestTemplate	myRestTemplate	= new RestTemplate() ;
+		myRestTemplate.setInterceptors(
+			Collections.singletonList( (
+											request,
+											body,
+											execution ) -> {
+				request.getHeaders()
+					.add( "Authorization", "Bearer " + accessToken.getTokenValue()) ;
+				return execution.execute( request, body ) ;
+			} ) ) ;
+		
+		String simpleUrl = "http://localhost:" + testPort + MyRestApi.URI_AUTHORIZED_HI ;
+
+		ResponseEntity<ObjectNode> restTemplateResponse = myRestTemplate
+			.getForEntity(
+				simpleUrl,
+				ObjectNode.class ) ;
+
+		logger.info( "millis using spring rest template with bearer token: {}", restTemplateResponse.getBody().get( "millis" ) ) ;
+
+		logger.info( "{} response: {}", simpleUrl, Helpers.jsonPrint( Helpers.getDetails( restTemplateResponse ) ) ) ;
+		logger.debug( "{} response: {}", simpleUrl, Helpers.jsonPrint( Helpers.getDetails( restTemplateResponse.getBody() ) ) ) ;
+
+		assertThat( restTemplateResponse.getStatusCode() ).isEqualTo( HttpStatus.OK ) ;
+		//assertThat( restTemplateResponse.getHeaders().get( HttpHeaders.SET_COOKIE ).toString() ).contains( "JSESSIONID" ) ;
+		assertThat( restTemplateResponse.getBody().path( "message" ).asText() ).isEqualTo( "authorized-get" ) ;
+
+	}
 
 }

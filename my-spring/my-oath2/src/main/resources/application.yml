@@ -77,9 +77,9 @@ info:
 my-examples:
   security:
     enabled: true
-    oath-user-token-name: "csap-service-claim"
-    oath-service-claim-name: "csap-service"
-    oath-client-service-name: "keycloak-service-auth"
+    oauth-user-token-name: "csap-service-claim"
+    oauth-service-claim-name: "csap-service"
+    oauth-client-service-name: "keycloak-service-auth"
     
 
 #

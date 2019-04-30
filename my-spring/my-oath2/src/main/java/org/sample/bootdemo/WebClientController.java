@@ -68,7 +68,7 @@ public class WebClientController {
 			String body = this.webClientUser
 					.get()
 					.uri( targetUrl )
-					.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
+					.attributes( clientRegistrationId( securityConfig.getOauthClientServiceName() ) )
 					.retrieve()
 					.bodyToMono( String.class )
 					.block() ;
@@ -137,7 +137,7 @@ public class WebClientController {
 			String body = this.webClientService
 					.get()
 					.uri( targetUrl )
-					.attributes( clientRegistrationId( securityConfig.getOathClientServiceName() ) )
+					.attributes( clientRegistrationId( securityConfig.getOauthClientServiceName() ) )
 					.retrieve()
 					.bodyToMono( String.class )
 					.block() ;
