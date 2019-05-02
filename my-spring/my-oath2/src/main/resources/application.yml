@@ -118,7 +118,7 @@ spring:
         
           keycloak-user-auth:
             client-id: csap-ui
-            client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
+            client-secret: ${oauthUserSecret:xx-xx-xx-xx-xx}
             clientName: "Keycloak: User authentication and Authorization"
             authorization-grant-type: authorization_code
             redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
@@ -134,7 +134,7 @@ spring:
           #
           keycloak-service-auth:
             client-id: csap-service
-            client-secret: ${oauthSecret:xx-xx-xx-xx-xx}
+            client-secret: ${oauthServiceSecret:xx-xx-xx-xx-xx}
             clientName: "Keycloak: client_credentials"
             authorization-grant-type: client_credentials
             redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
