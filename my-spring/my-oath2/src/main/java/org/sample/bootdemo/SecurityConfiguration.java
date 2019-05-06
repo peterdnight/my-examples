@@ -141,6 +141,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		logger.info( Helpers.header( claimInfo + "\n" + regInfo + "\n" + propInfo ) ) ;
 	}
+	
+	@Autowired
+	public void configureGlobal ( AuthenticationManagerBuilder authenticationBuilder )
+			throws Exception {
+
+		logger.info( Helpers.header( "Adding in global configuration..." ) ) ;
+		
+	}
 
 	// @Override
 	protected void configure (
@@ -191,7 +199,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and()
 					.formLogin()
 						// default to list of clients: default to the PREFERRED
-						// .loginPage( "/oauth2/authorization/keycloak-user-auth" )
+						//.loginPage( "/oauth2/authorization/keycloak-user-auth" )
+						//.loginPage( "/login" )
 					
 				.and()
 					.oauth2ResourceServer()
@@ -202,7 +211,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#oauth2login-advanced-map-authorities
 				.and()
 					.oauth2Login()
-						//.loginPage( "my login" ) // defaults to  "/oauth2/authorization/<oauth client id>"
+						//.loginPage( "/my-login" ) // defaults to  "/oauth2/authorization/<oauth client id>"
 						.userInfoEndpoint()
 							//.customUserType( customUserType, WebClientConfig.KEYCLOAK_CLIENT_ROLE )
                 			.userAuthoritiesMapper( authorities  -> oathUserAuthoritiesMapper( authorities ))

@@ -48,6 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure (
 								final HttpSecurity httpSecurity )
 			throws Exception {
+		
+		logger.info( Helpers.header( "configuring HttpSecurity" ) );
 
 		// @formatter:off
 		httpSecurity

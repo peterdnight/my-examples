@@ -94,7 +94,7 @@ loggers:
         level: warn
       
     - name: org.springframework.security
-      level: warn
+      level: debug
       additivity: false
       AppenderRef:  
       - ref: consoleAppender

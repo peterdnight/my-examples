@@ -121,7 +121,7 @@ loggers:
         
       
     - name: org.springframework.security
-      level: info
+      level: debug
       additivity: false
       AppenderRef:  
       - ref: consoleAppender
