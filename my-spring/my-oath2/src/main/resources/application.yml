@@ -110,7 +110,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
+          jwk-set-uri: ${oauthIssuerUri:http://localhost:8080/auth/realms/csap-default}/protocol/openid-connect/certs
           
       client:
       
@@ -138,27 +138,24 @@ spring:
             clientName: "Keycloak: client_credentials"
             authorization-grant-type: client_credentials
             redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
-            scope:
-              - openid
-              - profile
-              - email
-              - csap-roles-scope
+            scope: [ openid, profile,email, csap-roles-scope ]
 #            
         provider:
         
           keycloak-user-auth:
-            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/auth
-            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/token
-            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
-            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs
+            issuer-uri: ${oauthIssuerUri:http://localhost:8080/auth/realms/csap-default}
             user-name-attribute: preferred_username
             
             
           keycloak-service-auth:
-            issuer-uri: http://csap-dev01.lab.sensus.net:8090/auth/realms/csap-default
+            issuer-uri: ${oauthIssuerUri:http://localhost:8080/auth/realms/csap-default}
       
       
-      
+
+#            authorization-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/auth
+#            token-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/token
+#            user-info-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/userinfo
+#            jwk-set-uri: http://${oathHostPort:localhost:8080}/auth/realms/csap-default/protocol/openid-connect/certs      
       
       
       
