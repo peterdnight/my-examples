@@ -118,7 +118,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		String	regInfo		= oathProps.getRegistration().keySet().stream()
 			.map( key -> {
 									Registration registration	= oathProps.getRegistration().get( key ) ;
-									StringBuilder p				= new StringBuilder( Helpers.padLine( "Registration" ) + key ) ;
+									StringBuilder p				= new StringBuilder( "\n" + Helpers.padLine( "Registration" ) + key ) ;
 									p.append( Helpers.padLine( "Client ID" ) + registration.getClientId() ) ;
 									p.append( Helpers.padLine( "Client Name" ) + registration.getClientName() ) ;
 									p.append( Helpers.padLine( "Grant Type" ) + registration.getAuthorizationGrantType() ) ;
@@ -132,7 +132,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		String	propInfo	= oathProps.getProvider().keySet().stream()
 			.map( key -> {
 									Provider	provider	= oathProps.getProvider().get( key ) ;
-									StringBuilder p			= new StringBuilder( Helpers.padLine( "Provider: " ) + key ) ;
+									StringBuilder p			= new StringBuilder( "\n" + Helpers.padLine( "Provider" ) + key ) ;
 									p.append( Helpers.padLine( "Auth uri" ) + provider.getAuthorizationUri() ) ;
 									p.append( Helpers.padLine( "Issuer uri" ) + provider.getIssuerUri() ) ;
 									return p.toString() ;
@@ -141,13 +141,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		logger.info( Helpers.header( claimInfo + "\n" + regInfo + "\n" + propInfo ) ) ;
 	}
-	
+
 	@Autowired
 	public void configureGlobal ( AuthenticationManagerBuilder authenticationBuilder )
 			throws Exception {
 
 		logger.info( Helpers.header( "Adding in global configuration..." ) ) ;
-		
+
 	}
 
 	// @Override
@@ -160,7 +160,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		auth.inMemoryAuthentication()
 			.withUser( "peter" ).password( passwordEncoder().encode( "peter" ) ).roles( "peter" )
 			.and()
-			.withUser( USER ).password( passwordEncoder().encode( USER ) ).roles( "USER", AUTHENTICATED  )
+			.withUser( USER ).password( passwordEncoder().encode( USER ) ).roles( "USER", AUTHENTICATED )
 			.and()
 			.withUser( ADMIN ).password( passwordEncoder().encode( ADMIN ) ).roles( "ADMIN", AUTHENTICATED ) ;
 	}
