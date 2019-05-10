@@ -88,7 +88,8 @@ public class MyRestApi {
 				hi.put( "springboot", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/manage" ).toUriString() ) ;
 				hi.put( "logout", ServletUriComponentsBuilder.fromCurrentContextPath().path( "/logout" ).toUriString() ) ;
 
-				hi.set( "principal", Helpers.getDetails( customUser ) ) ;
+				hi.set( "userInfo", Helpers.getDetails( customUser.getPrincipal() ).path( "userInfo" ) ) ;
+				hi.set( "full-principal", Helpers.getDetails( customUser ) ) ;
 			}
 		} catch ( Exception e ) {
 

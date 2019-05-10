@@ -134,7 +134,7 @@ spring:
             clientName: "Keycloak: client_credentials"
             authorization-grant-type: client_credentials
             redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
-            scope: [ openid, profile,email, csap-roles-scope ]
+            #scope: [ openid, profile,email, csap-roles-scope ]
 #            
         provider:
         
