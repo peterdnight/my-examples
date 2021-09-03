@@ -29,8 +29,8 @@ Function invert-consolecolors {
     $oldBackground = $host.ui.rawui.BackgroundColor
 	
 	
- #   $oldForeground = "Gray"
- #   $oldBackground = "blue"
+   $oldForeground = "Gray"
+   $oldBackground = "blue"
 	
     $host.ui.rawui.ForegroundColor = $oldBackground
     $host.ui.rawui.BackgroundColor = $oldForeground
@@ -63,32 +63,36 @@ Function invert-consolecolors {
      
     $Host.PrivateData.ErrorBackgroundColor = "Yellow"
  
-    cls
+    #cls
 }
-invert-consolecolors
+#invert-consolecolors
  
 Function reset-consolecolors {
      
-    $host.ui.rawui.ForegroundColor = "DarkYellow"
-    $host.ui.rawui.BackgroundColor = "DarkMagenta"
- 
-    Set-PSReadlineOption -ResetTokenColors
- 
-    $Host.PrivateData.ErrorForegroundColor = "Red"
-    $Host.PrivateData.ErrorBackgroundColor = "Black"
-    $Host.PrivateData.WarningForegroundColor = "Yellow"
-    $Host.PrivateData.WarningBackgroundColor = "Black"
-    $Host.PrivateData.DebugForegroundColor = "Yellow"
-    $Host.PrivateData.DebugBackgroundColor = "Black"
-    $Host.PrivateData.VerboseForegroundColor = "Yellow"
-    $Host.PrivateData.VerboseBackgroundColor = "Black"
-    $Host.PrivateData.ProgressForegroundColor = "Yellow"
-    $Host.PrivateData.ProgressBackgroundColor = "DarkCyan"
- 
-    cls
+	$Host.UI.RawUI.BackgroundColor = ($bckgrnd = 'Gray')
+	$Host.UI.RawUI.ForegroundColor = 'White'
+	$Host.PrivateData.ErrorForegroundColor = 'DarkRed'
+	$Host.PrivateData.ErrorBackgroundColor = $bckgrnd
+	$Host.PrivateData.WarningForegroundColor = 'Yellow'
+	$Host.PrivateData.WarningBackgroundColor = $bckgrnd
+	$Host.PrivateData.DebugForegroundColor = 'Yellow'
+	$Host.PrivateData.DebugBackgroundColor = $bckgrnd
+	$Host.PrivateData.VerboseForegroundColor = 'Green'
+	$Host.PrivateData.VerboseBackgroundColor = $bckgrnd
+	$Host.PrivateData.ProgressForegroundColor = 'Blue'
+	$Host.PrivateData.ProgressBackgroundColor = $bckgrnd
+	Clear-Host
  
 }
+reset-consolecolors
 
+
+
+function s {
+	& $profile
+}
+
+ 
 
 function which {
 	where.exe $args

@@ -42,7 +42,7 @@ choco install --yes virtualbox
 choco install --yes sysinternals
 choco install --yes cygwin cyg-get 
 choco install --yes git
-choco install --yes jdk11
+choco install --yes openjdk11
 choco install --yes git wget rsync bind-toolsonly
 
 # quick commands
@@ -51,7 +51,6 @@ choco uninstall <...>
 choco update <...>
 
 
-# choco install --yes jdk8
 ```
 
 ## Step 3 - Install sts
