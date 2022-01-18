@@ -502,6 +502,18 @@ public class Helpers {
 
 	}
 
+	public static void print ( String header , Object... items ) {
+		
+		System.out.println( buildDescription( header, items ) ) ;
+		
+	}
+
+	public static void printSection ( String header , Object... items ) {
+		
+		System.out.println( buildDescription( highlightHeader( header ), items ) ) ;
+		
+	}
+
 	public static String buildDescription ( String header , Object... items ) {
 
 		StringBuilder desc = new StringBuilder( header ) ;
