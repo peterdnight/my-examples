@@ -8,7 +8,7 @@
 			
 			<!--  %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) \(%file:%line\) %red(%class{40}.%method) %n==> %message %n %n -->
 			<pattern>
-				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level \(%file:%line\) %class{40}.%method %n==> %message %n %n
+				 %d{HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) \(%file:%line\) %red(%class{40}.%method) %n==> %message %n %n
 			</pattern>
 		</encoder>
 	</appender>

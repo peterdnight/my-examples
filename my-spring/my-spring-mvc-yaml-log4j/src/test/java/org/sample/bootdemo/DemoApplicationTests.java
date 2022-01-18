@@ -1,17 +1,41 @@
-package org.sample.bootdemo;
+package org.sample.bootdemo ;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import static org.assertj.core.api.Assertions.assertThat ;
 
-@RunWith(SpringRunner.class)
+import org.junit.jupiter.api.Test ;
+import org.junit.jupiter.api.TestInstance ;
+import org.slf4j.Logger ;
+import org.slf4j.LoggerFactory ;
+import org.springframework.beans.factory.annotation.Autowired ;
+import org.springframework.boot.test.context.SpringBootTest ;
+import org.springframework.context.ApplicationContext ;
+
+@TestInstance ( TestInstance.Lifecycle.PER_CLASS )
 @SpringBootTest
 public class DemoApplicationTests {
 
+	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
+
+	static {
+		Helpers.initialize( "Test Setup Complete" ) ;
+	}
+
+	@Autowired
+	private ApplicationContext applicationContext ;
+
 	@Test
-	public void contextLoads() {
+	public void contextLoads ( ) {
+		
+		logger.info( Helpers.testHeader( ) );
+		
+
+		logger.info( Helpers.highlightHeader( "beans: {}" ), 
+				applicationContext.getBeanDefinitionCount( ) ) ;
+
+		assertThat( applicationContext.getBeanDefinitionCount( ) )
+				.as( "Spring Bean count" )
+				.isGreaterThan( 100 ) ;
+
 	}
 
 }
-

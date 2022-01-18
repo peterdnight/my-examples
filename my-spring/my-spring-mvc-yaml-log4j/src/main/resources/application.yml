@@ -6,12 +6,12 @@ spring:
 
   profiles:
   
-    active: desktop # Override using --spring.profiles.active=xxx,yyy,zzz
-    include: 
-    - app-defaults
+    active: my-test 
 
 ---
-spring.profiles: app-defaults
+spring.config:
+    activate:
+      on-profile: "my-test"
 
 #
 #  Servlet & Tomcat

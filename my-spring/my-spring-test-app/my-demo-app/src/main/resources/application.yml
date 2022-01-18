@@ -7,21 +7,25 @@ spring:
   profiles:
   
     active: desktop # Override using --spring.profiles.active=xxx,yyy,zzz
-    include: 
-    - app-defaults
 
 ---
-spring.profiles: app-defaults
+spring.config:
+    activate:
+      on-profile: desktop
 
 #
 #  Servlet & Tomcat
 #
 server:
+
   port: 8080
+  
   tomcat:
-    max-threads: 50
+    threads:
+      max: 50
+    
   servlet:
-    context-path: /
+    #context-path: /
     session:
       persistent: false
       cookie:
@@ -49,12 +53,6 @@ management:
       exposure:
         include: "*"
       
-info:
-  build.profile: ${spring.profiles.active}
-  build.artifact: "Maven: @project.artifactId@"
-  build.name: "@project.name@"
-  build.description: "@project.description@"
-  build.version: "@project.version@"
  
 #
 #  Core Spring
@@ -70,12 +68,14 @@ spring:
   output:
     ansi:
       enabled: never 
-  resources: 
-    cache:
-      period: 32000000
+  web:
+    resources: 
+      cache:
+        period: 0
 
   aop:
     proxy-target-class: true
+    
   thymeleaf:
     mode: HTML
 

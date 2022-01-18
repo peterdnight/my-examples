@@ -4,44 +4,38 @@
 #  
 
 
-
 Configuration: 
-  
   status: warn
   
-  monitorInterval: 5
+  skipJansi: false
+  
+  monitorInterval: 10
   
   appenders:
     
-    console:
-      
+    Console:
       name: consoleAppender
       target: SYSTEM_OUT
-      
-      JSONLayout:
-        compact: true
-        includeTimeMillis: true 
-        locationInfo: true # expensive operation
-        complete: false
-        eventEol: true
-        KeyValuePair:
-        - key: "timestamp"
-          value: "$${date:yyyy-MM-dd'T'HH:mm:ss.SSSZ}"
-        - key: "friendlyDate"
-          value: "$${date:MMM dd' 'HH:mm:ss}"
+      PatternLayout:
+        #Pattern: "--- %-11p %-60logger{5.9.~} (%file:%line).%method()   %n%-15date{ABSOLUTE} %-55thread %n%n%message%n---%n%n"
+        # %d is preferred for full output; but for desktop 
+        # https://logging.apache.org/log4j/2.x/log4j-core/apidocs/org/apache/logging/log4j/core/pattern/AnsiEscape.html#BG_GREEN
+        disableAnsi: false
+        Pattern: "%highlight{--- %-11p [ %thread ] %-60logger{5.9.~} (%file:%line).%method()   %n%-15date{ABSOLUTE} %-55thread %n%n%message%n---%n%n}{ERROR=bright red bg_white, WARN=bright red, INFO=black, DEBUG=green, TRACE=BRIGHT YELLOW}"
+     
           
-          
-    RollingFile:
+    RollingFile: 
     
       - name: errorsAppender
         fileName: logs/warnings.log
         filePattern: "logs/warning-%i.log.gz"
         append: true
+        
         DefaultRolloverStrategy:
           max: 3
         policies:
           SizeBasedTriggeringPolicy:
-            size: "5 MB"
+            size: "5 MB"    
         JSONLayout:
           compact: true
           includeTimeMillis: true 
@@ -53,10 +47,8 @@ Configuration:
             value: "$${date:yyyy-MM-dd'T'HH:mm:ss.SSSZ}"
           - key: "friendlyDate"
             value: "$${date:MMM dd' 'HH:mm:ss}"
-          
 
   loggers: 
-  
   
     root:
       level: warn
@@ -64,8 +56,8 @@ Configuration:
       - ref: consoleAppender
       - ref : errorsAppender
   
+  
     logger:
-    
     
       - name: org.sample
         level: info
@@ -94,14 +86,26 @@ Configuration:
         - ref: consoleAppender
         - ref : errorsAppender
           
+#      - name: org.springframework.boot.devtools
+#        level: debug
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref : errorsAppender
+          
       - name: org.springframework.boot.SpringApplication
         level: info
         additivity: false
         AppenderRef:  
         - ref: consoleAppender
         - ref : errorsAppender
-        
-        
+          
+#      - name: org.springframework
+#        level: debug
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref : errorsAppender
         
 
         

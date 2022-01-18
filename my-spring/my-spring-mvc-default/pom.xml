@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.4.RELEASE</version>
+		<version>2.6.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.samples</groupId>
@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>16</java.version>
 	</properties>
 
 	<dependencies>
@@ -48,6 +48,26 @@
 			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+
+		<!-- utilities -->
+
+		<dependency>
+		   <groupId>org.apache.commons</groupId>
+		   <artifactId>commons-text</artifactId>
+		   <version>1.9</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+
+
 	</dependencies>
 
 	<build>
