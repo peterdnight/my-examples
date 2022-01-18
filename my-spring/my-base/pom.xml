@@ -76,11 +76,6 @@
 			<artifactId>commons-text</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-
 
 		<!-- dev ops -->
 		<dependency>
