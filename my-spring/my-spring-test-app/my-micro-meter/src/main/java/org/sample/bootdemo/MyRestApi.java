@@ -11,6 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 @RequestMapping ( "/api" )
 public class MyRestApi {
 	
+	
+	@Autowired
+	CsapMeterUtilities meterUtilities ;
+	
 
 	@Autowired
 	ObjectMapper jacksonMapper ;
@@ -18,6 +22,10 @@ public class MyRestApi {
 
 	@GetMapping ( "/hi" )
 	public String hi ( ) {
+		
+		meterUtilities.incrementCounter( "csap.hi" ) ;
+		
+		meterUtilities.incrementCounter( "never.hi" ) ;
 
 		return "hi" ;
 

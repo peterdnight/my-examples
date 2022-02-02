@@ -13,6 +13,12 @@ spring.config:
     activate:
       on-profile: desktop
 
+
+#
+# Show configuration report
+#
+# debug: true
+
 #
 #  Servlet & Tomcat
 #

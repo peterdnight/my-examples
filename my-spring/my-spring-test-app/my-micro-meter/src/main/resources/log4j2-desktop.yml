@@ -75,7 +75,7 @@ Configuration:
         - ref : errorsAppender
           level: warn
         
-    #
+    # 
     #  Spring BOOT: Show application yaml files, and boot messages
     #
           
@@ -85,6 +85,23 @@ Configuration:
         AppenderRef:  
         - ref: consoleAppender
         - ref : errorsAppender
+          
+#      - name: org.springframework.context.annotation
+#        level: debug
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref : errorsAppender
+          
+#      - name: org.springframework.boot.autoconfigure
+#        level: debug
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref : errorsAppender
+        
+        
+        
           
 #      - name: org.springframework.boot.devtools
 #        level: debug
