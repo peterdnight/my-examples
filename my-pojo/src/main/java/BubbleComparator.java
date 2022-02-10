@@ -78,7 +78,7 @@ public class BubbleComparator {
 
 	Descending descending = new Descending( ) ;
 
-	void findSmallest( int someNumbers[] , int maxDesired ) {
+	void findSmallest ( int someNumbers[] , int maxDesired ) {
 
 		sort( descending, someNumbers, someNumbers.length ) ;
 
@@ -119,13 +119,13 @@ public class BubbleComparator {
 
 	public static void main ( String args[] ) {
 
-		BubbleComparator myBubble = new BubbleComparator( ) ;
+		var myBubble = new BubbleComparator( ) ;
 
 		int someNumbers[] = {
 				64, 34, 25, 12, 22, 11, 90
 		} ;
 
-		//myBubble.sortDemo( someNumbers ) ;
+		// myBubble.sortDemo( someNumbers ) ;
 
 		myBubble.sortDemo( buildRandomIntegers( 8 ) ) ;
 

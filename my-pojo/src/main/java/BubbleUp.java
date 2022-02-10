@@ -79,7 +79,7 @@ public class BubbleUp {
 
 	public static void main ( String args[] ) {
 
-		BubbleUp myBubble = new BubbleUp( ) ;
+		var myBubble = new BubbleUp( ) ;
 
 		int someNumbers[] = {
 				64, 34, 25, 12, 22, 11, 90
