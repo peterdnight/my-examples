@@ -1,14 +1,15 @@
 
 import java.util.Arrays ;
+import java.util.Comparator ;
 import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.Collectors ;
 import java.util.stream.IntStream ;
 
-public class SimpleBubbleSort {
+public class BubbleComparator {
 
 	static boolean isDebug = true ;
 
-	void findLargest ( int someNumbers[] , int maxDesired ) {
+	void sort ( Comparator<Integer> comparator , int someNumbers[] , int maxDesired ) {
 
 		for ( var bubbleIterations = 0; bubbleIterations < maxDesired; bubbleIterations++ ) {
 
@@ -18,10 +19,12 @@ public class SimpleBubbleSort {
 
 			for ( var bubbleUpIndex = 0; bubbleUpIndex < indexOfSortedItems; bubbleUpIndex++ ) {
 
-				if ( someNumbers[ bubbleUpIndex ] > someNumbers[ bubbleUpIndex + 1 ] ) {
+				if ( comparator.compare( someNumbers[ bubbleUpIndex ], someNumbers[ bubbleUpIndex + 1 ] ) > 0 ) {
 
-					debug( padLeft( "moving:" + padLeft( bubbleUpIndex + "[" + someNumbers[ bubbleUpIndex ] + "]", 7 ),
+					debug( padLeft( "moving:"
+							+ padLeft( bubbleUpIndex + "[" + someNumbers[ bubbleUpIndex ] + "]", 7 ),
 							20 ) ) ;
+
 					int temp = someNumbers[ bubbleUpIndex ] ;
 					someNumbers[ bubbleUpIndex ] = someNumbers[ bubbleUpIndex + 1 ] ;
 					someNumbers[ bubbleUpIndex + 1 ] = temp ;
@@ -34,9 +37,9 @@ public class SimpleBubbleSort {
 
 	}
 
-	void sortToLargest ( int someNumbers[] ) {
+	void sort ( Comparator<Integer> comparator , int someNumbers[] ) {
 
-		findLargest( someNumbers, someNumbers.length ) ;
+		sort( comparator, someNumbers, someNumbers.length ) ;
 
 	}
 
@@ -49,6 +52,38 @@ public class SimpleBubbleSort {
 
 	}
 
+	public class Ascending implements Comparator<Integer> {
+		public int compare ( Integer o1 , Integer o2 ) {
+
+			return o1.compareTo( o2 ) ;
+
+		}
+	};
+
+	Ascending ascending = new Ascending( ) ;
+
+	void findLargest ( int someNumbers[] , int maxDesired ) {
+
+		sort( ascending, someNumbers, someNumbers.length ) ;
+
+	}
+
+	public class Descending implements Comparator<Integer> {
+		public int compare ( Integer o1 , Integer o2 ) {
+
+			return o2.compareTo( o1 ) ;
+
+		}
+	};
+
+	Descending descending = new Descending( ) ;
+
+	void findSmallest( int someNumbers[] , int maxDesired ) {
+
+		sort( descending, someNumbers, someNumbers.length ) ;
+
+	}
+
 	void sortDemo ( int[] someNumbers ) {
 
 		printSection( "BubbleSortDemo",
@@ -56,7 +91,12 @@ public class SimpleBubbleSort {
 
 		int sortAllNumbers[] = someNumbers.clone( ) ;
 
-		sortToLargest( sortAllNumbers ) ;
+		sort( ascending, sortAllNumbers ) ;
+
+		print( "test", "sorted full array",
+				"values", Arrays.toString( sortAllNumbers ) ) ;
+
+		sort( descending, sortAllNumbers ) ;
 
 		print( "test", "sorted full array",
 				"values", Arrays.toString( sortAllNumbers ) ) ;
@@ -71,7 +111,7 @@ public class SimpleBubbleSort {
 				sortWithLimitNumbers.length - limit,
 				sortWithLimitNumbers.length ) ;
 
-		print( "test", "sorted array with limit",
+		print( "test", "findLargest",
 				"limit", limit,
 				"values", Arrays.toString( someMoreNumbersWithLimit ) ) ;
 
@@ -79,15 +119,15 @@ public class SimpleBubbleSort {
 
 	public static void main ( String args[] ) {
 
-		SimpleBubbleSort myBubble = new SimpleBubbleSort( ) ;
+		BubbleComparator myBubble = new BubbleComparator( ) ;
 
 		int someNumbers[] = {
 				64, 34, 25, 12, 22, 11, 90
 		} ;
 
-		myBubble.sortDemo( someNumbers ) ;
+		//myBubble.sortDemo( someNumbers ) ;
 
-		myBubble.sortDemo( buildRandomIntegers( 20 ) ) ;
+		myBubble.sortDemo( buildRandomIntegers( 8 ) ) ;
 
 	}
 
