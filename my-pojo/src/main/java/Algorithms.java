@@ -20,26 +20,26 @@ public class Algorithms {
 		// Slide a window over the string, adjusting width via start and end
 		//
 		var windowCharacters = new HashSet<Character>( ) ;
-		var start = 0 ;
+		var windowStartIndex = 0 ;
 		var size = inputText.length( ) ;
 		var longestSubStringFound = 0 ;
 
 		debug( ) ;
 
-		for ( var end = 0; end < size; end++ ) {
+		for ( var windowEndIndex = 0; windowEndIndex < size; windowEndIndex++ ) {
 
-			debug( inputText.substring( start, end ) ) ;
+			debug( inputText.substring( windowStartIndex, windowEndIndex ) ) ;
 
-			while ( windowCharacters.contains( inputText.charAt( end ) ) ) {
+			while ( windowCharacters.contains( inputText.charAt( windowEndIndex ) ) ) {
 
-				windowCharacters.remove( inputText.charAt( start ) ) ;
-				start++ ;
+				windowCharacters.remove( inputText.charAt( windowStartIndex ) ) ;
+				windowStartIndex++ ;
 
 			}
 
-			windowCharacters.add( inputText.charAt( end ) ) ;
+			windowCharacters.add( inputText.charAt( windowEndIndex ) ) ;
 
-			var currentWindowLength = end - start + 1 ;
+			var currentWindowLength = windowEndIndex - windowStartIndex + 1 ;
 
 			if ( currentWindowLength > longestSubStringFound )
 				debug( "\n" ) ;
