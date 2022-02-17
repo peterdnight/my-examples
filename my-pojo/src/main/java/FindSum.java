@@ -3,7 +3,6 @@ import java.util.ArrayList ;
 import java.util.Arrays ;
 import java.util.HashMap ;
 import java.util.List ;
-import java.util.Optional ;
 import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.IntStream ;
 
@@ -18,8 +17,6 @@ public class FindSum {
 
 		Arrays.sort( numbers ) ;
 
-		Optional<MatchSum> optionalMatch = Optional.empty( ) ;
-
 		var leftOffset = 0 ;
 		var rightOffset = numbers.length - 1 ;
 
@@ -27,12 +24,12 @@ public class FindSum {
 
 		while ( leftOffset < rightOffset ) {
 
-			var sum = numbers[leftOffset] + numbers[rightOffset] ;
+			var sum = numbers[ leftOffset ] + numbers[ rightOffset ] ;
 
 			debug( padLeft( String.format( "sum: %4s [%s,%s] [%s,%s]",
 					sum,
-					leftOffset, numbers[leftOffset],
-					rightOffset, numbers[rightOffset] ),
+					leftOffset, numbers[ leftOffset ],
+					rightOffset, numbers[ rightOffset ] ),
 					20 ) ) ;
 
 			if ( sum == desiredSum ) {
@@ -63,9 +60,9 @@ public class FindSum {
 
 		for ( var firstIndex = 0; firstIndex < numbers.length - 1; firstIndex++ ) {
 
-			for ( int largerIndex = firstIndex + 1; largerIndex < numbers.length; largerIndex++ ) {
+			for ( var largerIndex = firstIndex + 1; largerIndex < numbers.length; largerIndex++ ) {
 
-				var sum = numbers[firstIndex] + numbers[largerIndex] ;
+				var sum = numbers[ firstIndex ] + numbers[ largerIndex ] ;
 
 				var matchFlag = "" ;
 
@@ -100,7 +97,7 @@ public class FindSum {
 
 		for ( var firstIndex = 0; firstIndex < numbers.length; firstIndex++ ) {
 
-			var diffFromTarget = desiredSum - numbers[firstIndex] ;
+			var diffFromTarget = desiredSum - numbers[ firstIndex ] ;
 
 			if ( valueMap.containsKey( diffFromTarget ) ) {
 
@@ -108,7 +105,7 @@ public class FindSum {
 
 			}
 
-			valueMap.put( numbers[firstIndex], firstIndex ) ;
+			valueMap.put( numbers[ firstIndex ], firstIndex ) ;
 
 //			debug( padLeft( String.format( "diff: %4s [%s,%s]", diffFromTarget, numbers.get( firstIndex ), firstIndex ),
 //					20 ) ) ;

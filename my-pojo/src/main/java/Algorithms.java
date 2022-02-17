@@ -115,6 +115,10 @@ public class Algorithms {
 
 	}
 
+	//
+	//  Copy paste this file into: https://www.jdoodle.com/online-java-compiler/ to view output
+	//
+
 //			 ------------------- Debug  Output-----------------------
 //			                                       
 //			                   a                   

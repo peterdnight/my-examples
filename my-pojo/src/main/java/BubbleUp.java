@@ -55,6 +55,9 @@ public class BubbleUp {
 				"input", Arrays.toString( someNumbers ) ) ;
 
 		int sortAllNumbers[] = someNumbers.clone( ) ;
+		
+		//
+		//System.arraycopy( someNumbers, 0, sortAllNumbers, 0, 0 );
 
 		sortToLargest( sortAllNumbers ) ;
 
