@@ -109,7 +109,7 @@ public class Algorithms {
 		// random string
 		//
 		var randomString = buildRandomString( 2000 ) ;
-		printSection( "code reviewed: findLongestSubstringLength",
+		printSection( "code reviewed using random input: findLongestSubstringLength",
 				"inputText size", randomString.length( ),
 				"result", algorithms.findLongestSubstringLength( randomString ) ) ;
 
