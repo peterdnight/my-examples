@@ -3,7 +3,7 @@ import java.util.HashSet ;
 import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.IntStream ;
 
-public class Shorts {
+public class Algorithms {
 
 	static boolean isDebug = true ;
 
@@ -13,30 +13,41 @@ public class Shorts {
 	// characters
 	//
 	//
-	int lengthOfLongestSubstring ( String inputText ) {
+	int findLongestSubstringWithNoRepeats ( String inputText ) {
 
-		var charSet = new HashSet<Character>( ) ;
-		var front = 0 ;
+		//
+		// Slide a window over the string, adjusting width via start and end
+		//
+		var windowCharacters = new HashSet<Character>( ) ;
+		var start = 0 ;
 		var size = inputText.length( ) ;
-		var result = 0 ;
+		var longestSubString = 0 ;
 
-		for ( var rear = 0; rear < size; rear++ ) {
+		debug( ) ;
 
-			
-			while ( charSet.contains( inputText.charAt( rear ) ) ) {
+		for ( var end = 0; end < size; end++ ) {
 
-				charSet.remove( inputText.charAt( front ) ) ;
-				front++ ;
+			debug( inputText.substring( start, end ) ) ;
+
+			while ( windowCharacters.contains( inputText.charAt( end ) ) ) {
+
+				windowCharacters.remove( inputText.charAt( start ) ) ;
+				start++ ;
 
 			}
 
-			charSet.add( inputText.charAt( rear ) ) ;
-			int temp = rear - front + 1 ;
-			result = temp > result ? temp : result ;
+			windowCharacters.add( inputText.charAt( end ) ) ;
+
+			int temp = end - start + 1 ;
+			if ( temp > longestSubString ) {
+				debug("\n") ;
+			}
+			longestSubString = temp > longestSubString ? temp : longestSubString ;
+			
 
 		}
 
-		return result ;
+		return longestSubString ;
 
 	}
 
@@ -47,12 +58,13 @@ public class Shorts {
 	//
 	public static void main ( String args[] ) {
 
-		var shorts = new Shorts( ) ;
+		var algorithms = new Algorithms( ) ;
 
-		var inputText = "abcabcbb" ;
+		var inputText = "abcabcaadklbbasdfghjkll" ;
+
 		printSection( "lengthOfLongestSubstring",
 				"inputText", inputText,
-				"result", shorts.lengthOfLongestSubstring( inputText ) ) ;
+				"result", algorithms.findLongestSubstringWithNoRepeats( inputText ) ) ;
 
 	}
 
@@ -71,17 +83,22 @@ public class Shorts {
 
 	}
 
+	static void debug ( ) {
+
+		System.out.print( "\n\n\n ------------------- Debug  -----------------------\n" ) ;
+
+	}
+
+	
 	static void debug ( String msg ) {
 
-		if ( msg == null ) {
+		debug( msg, 10 ) ;
 
-			System.out.print( "\n\n\n ------------------- Debug  -----------------------\n" ) ;
+	}
 
-		} else {
+	static void debug ( String msg , int width ) {
 
-			System.out.print( msg ) ;
-
-		}
+		System.out.print( padLeft( msg, width ) ) ;
 
 	}
 
