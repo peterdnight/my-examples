@@ -1,5 +1,6 @@
 
 import java.util.HashSet ;
+import java.util.Set ;
 import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.IntStream ;
 
@@ -13,7 +14,7 @@ public class Algorithms {
 	// characters
 	//
 	//
-	int findLongestSubstringWithNoRepeats ( String inputText ) {
+	int findLongestSubstringLength ( String inputText ) {
 
 		//
 		// Slide a window over the string, adjusting width via start and end
@@ -21,7 +22,7 @@ public class Algorithms {
 		var windowCharacters = new HashSet<Character>( ) ;
 		var start = 0 ;
 		var size = inputText.length( ) ;
-		var longestSubString = 0 ;
+		var longestSubStringFound = 0 ;
 
 		debug( ) ;
 
@@ -38,18 +39,46 @@ public class Algorithms {
 
 			windowCharacters.add( inputText.charAt( end ) ) ;
 
-			int temp = end - start + 1 ;
-			if ( temp > longestSubString ) {
-				debug("\n") ;
-			}
-			longestSubString = temp > longestSubString ? temp : longestSubString ;
-			
+			var currentWindowLength = end - start + 1 ;
+
+			if ( currentWindowLength > longestSubStringFound )
+				debug( "\n" ) ;
+
+			longestSubStringFound = currentWindowLength > longestSubStringFound
+					? currentWindowLength
+					: longestSubStringFound ;
 
 		}
 
-		return longestSubString ;
+		return longestSubStringFound ;
 
 	}
+
+	//
+	// from
+	// https://leetcode.com/problems/longest-substring-without-repeating-characters
+	//
+	// @formatter:off
+	public int lengthOfLongestSubstring ( String s ) {
+        int l = 0;
+        int r = 0;
+        Set<Character> set = new HashSet<>();
+        int maxdiff = 0;
+        while (r < s.length()) {
+            char rc = s.charAt(r);
+            char lc = s.charAt(l);
+            if(set.contains(rc)) {
+                set.remove(lc);
+                l++;
+            } else {
+                set.add(rc);
+                r++;
+            }
+            maxdiff = Math.max(r - l, maxdiff);
+        }
+        return maxdiff;
+    }
+	// @formatter:on
 
 	//
 	//
@@ -60,13 +89,105 @@ public class Algorithms {
 
 		var algorithms = new Algorithms( ) ;
 
-		var inputText = "abcabcaadklbbasdfghjkll" ;
+		var inputText = "abcabcaadklbbasdfghjkllmn" ;
 
-		printSection( "lengthOfLongestSubstring",
+		//
+		// Code Reviewed
+		//
+		printSection( "code reviewed: findLongestSubstringLength",
 				"inputText", inputText,
-				"result", algorithms.findLongestSubstringWithNoRepeats( inputText ) ) ;
+				"result", algorithms.findLongestSubstringLength( inputText ) ) ;
+
+		//
+		// Leet
+		//
+		printSection( "leetcode: lengthOfLongestSubstring",
+				"inputText", inputText,
+				"result", algorithms.lengthOfLongestSubstring( inputText ) ) ;
+
+		//
+		// random string
+		//
+		var randomString = buildRandomString( 2000 ) ;
+		printSection( "code reviewed: findLongestSubstringLength",
+				"inputText size", randomString.length( ),
+				"result", algorithms.findLongestSubstringLength( randomString ) ) ;
 
 	}
+
+//			 ------------------- Debug  Output-----------------------
+//			                                       
+//			                   a                   
+//			                  ab                   
+//			                 abc                 bca                 cab                 abc                 bca                   a                  ad                 adk                   
+//			                adkl                   
+//			               adklb                   b                  ba                 bas                basd               basdf                   
+//			              basdfg                   
+//			             basdfgh                   
+//			            basdfghj                   
+//			           basdfghjk                   
+//			          basdfghjkl                   l                  lm
+//		
+//		
+//			*
+//			**
+//			***
+//			****
+//			*****     code reviewed: findLongestSubstringLength
+//			****
+//			***
+//			**
+//			*
+//			inputText:                    'abcabcaadklbbasdfghjkllmn'
+//			result:                       '10'
+//		
+//		
+//		
+//			*
+//			**
+//			***
+//			****
+//			*****     leetcode: lengthOfLongestSubstring
+//			****
+//			***
+//			**
+//			*
+//			inputText:                    'abcabcaadklbbasdfghjkllmn'
+//			result:                       '10'
+//		
+//		
+//		
+//			 ------------------- Debug  Output-----------------------
+//			                                       
+//			                   g                   
+//			                  gt                   
+//			                 gto                   
+//			                gtom                   
+//			               gtomr                   
+//			              gtomra                   
+//			             gtomran                   
+//			            gtomranw                   
+//			           gtomranwe                   
+//			          gtomranwei                   
+//			         gtomranweiv                   
+//			        gtomranweivx                   
+//			       gtomranweivxp                   
+//			      gtomranweivxpj                   
+//			     gtomranweivxpjk               xpjkv              xpjkvl                   l                  ls                 lsx                 sxl                sxlt                          
+//			    oxzuefigwjsdvlym                   m                  mh                 mhd                mhdn               mhdnf              mhdnfr             mhdnfri      
+//		
+//		
+//			*
+//			**
+//			***
+//			****
+//			*****     code reviewed: findLongestSubstringLength
+//			****
+//			***
+//			**
+//			*
+//			inputText size:               '2000'
+//			result:                       '16'
 
 	//
 	//
@@ -83,16 +204,29 @@ public class Algorithms {
 
 	}
 
-	static void debug ( ) {
+	static String buildRandomString ( int sizeOfArray ) {
 
-		System.out.print( "\n\n\n ------------------- Debug  -----------------------\n" ) ;
+		var randomLetters = IntStream.range( 0, sizeOfArray )
+				.map( iteration -> 'a' + ThreadLocalRandom.current( ).nextInt( 0, 26 ) )
+				.collect( StringBuilder::new,
+						StringBuilder::appendCodePoint,
+						StringBuilder::append )
+				.toString( ) ;
+		// .collect(Collectors.joining( )) ;
+
+		return randomLetters ;
 
 	}
 
-	
+	static void debug ( ) {
+
+		System.out.print( "\n\n\n ------------------- Debug  Output-----------------------\n" ) ;
+
+	}
+
 	static void debug ( String msg ) {
 
-		debug( msg, 10 ) ;
+		debug( msg, 20 ) ;
 
 	}
 
