@@ -6,7 +6,7 @@ import java.util.TreeMap ;
 import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.IntStream ;
 
-public class AlexaLogProcessor {
+public class SampleLogProcessor {
 	
 	//
 	//  Copy paste this file into: https://www.jdoodle.com/online-java-compiler/ to view output
@@ -135,9 +135,9 @@ public class AlexaLogProcessor {
 	//
 	public static void main ( String args[] ) {
 
-		var alexaLogProcessor = new AlexaLogProcessor( ) ;
+		var logProcessor = new SampleLogProcessor( ) ;
 
-		var alexaLogs = """
+		var sampleLogs = """
 				10-Mar-2020 10:34:00, S1, CA, Q1
 				10-Mar-2020 10:30:00, S1, CA, Q2
 				10-Mar-2020 10:32:00, S1, CA, Q3
@@ -151,8 +151,8 @@ public class AlexaLogProcessor {
 				""" ;
 
 		printSection( "processLogs",
-				"alexaLogs", alexaLogs,
-				"result", alexaLogProcessor.findTopQuestions( alexaLogs ) ) ;
+				"sampleLogs", sampleLogs,
+				"result", logProcessor.findTopQuestions( sampleLogs ) ) ;
 
 	}
 
