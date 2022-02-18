@@ -1,0 +1,7 @@
+logging:
+  config: "classpath:log4j2-test.yml"
+
+  
+spring:
+  jpa:
+    show-sql: false
