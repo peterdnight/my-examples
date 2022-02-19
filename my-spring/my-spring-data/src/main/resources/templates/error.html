@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<title>Error Page</title>
+
+<link th:href="@{ /css/csap-2.css}" rel="stylesheet" type="text/css"
+	media="screen" />
+
+
+<style>
+input {
+	margin-right: 1em;
+}
+
+#summary .noteAlt {
+	display: inline;
+	font-size: 0.8em;
+	margin-right: 2em;
+	padding: 3px;
+}
+
+div.title {
+	line-height: 1em
+}
+
+#summary {
+	line-height: 2em
+}
+
+header, section {
+	margin-bottom: 1em;
+}
+
+</style>
+</head>
+
+<body class="csap-scrollable theme-dark theme-apple">
+
+	<header>
+		Csap Error Page:
+		<span
+			class=""
+			th:text="${timestamp }"></span>
+	</header>
+	
+
+	<article class=content>
+
+	<section id="summary">
+		<div class="title">Summary</div>
+
+		Request:
+		<div
+			class="noteAlt"
+			th:text="${path }"></div>
+		<br />
+		Message:
+		<div
+			class="noteAlt"
+			th:text="${message }"></div>
+		<br />
+		Http Status:
+		<div
+			class="noteAlt"
+			th:text="${ status }"></div>
+		Reason:
+		<div
+			class="noteAlt"
+			th:text="${error }"></div>
+	</section>
+
+	<div
+		th:if="${ csapFiltered }"
+		style="margin: 1em; font-size: 10pt">
+		Stack trace (Hide using server.error include-stacktrace.never)
+		<pre
+			class="code"
+			style="max-height: 50%; max-width: 80%;"
+			th:text="${ csapFiltered }"></pre>
+	</div>
+
+	<div
+		th:unless="${csapFiltered}"
+		style="margin: 1em; font-size: 10pt">
+		Stack trace (Hide using server.error include-stacktrace.never)
+		<pre
+			class="code" 
+			style="max-height: 50%; max-width: 80%;"
+			th:text="${ trace }"></pre>
+	</div>
+	</content>
+
+
+</body>
+
+</html>

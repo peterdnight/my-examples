@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+<title>Employee Portal</title>
+
+<link th:href="@{ /css/csap-2.css}" rel="stylesheet" type="text/css"
+	media="screen" />
+	
+<script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+
+<!--
+    <script th:src="@{/js/simple.js}"></script>
+    -->
+<style>
+
+article.content {
+	padding: 2em;
+}
+
+table.csap {
+	width: 100%;
+	margin-bottom: 3em;
+}
+
+
+table td:nth-child(1) {
+	width: 15em;
+}
+
+table td:nth-child(2) {
+	width: 5em;
+}
+
+header .noteAlt {
+	font-size: 0.7em;
+	margin: 0;
+	padding: 3px;
+}
+
+div.title {
+	width: 20em;
+	color: black;
+}
+</style>
+
+<script th:inline="javaScript">
+
+
+const BASE_URL = [[@{ / }]];
+
+</script>
+
+<script
+	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/spring-data-demo/modules/demo-main.js')} }"
+	th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
+
+	
+</head>
+
+<body class="csap-scrollable theme-dark theme-blue">
+
+	<header>Employee Portal</header>
+
+	<article class=content>
+
+		<table
+			id="SpringMvc"
+			class="csap">
+			<thead>
+
+				<tr>
+					<th>
+						Demos
+					</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							th:href="@{/}">LandingPage</a>
+							
+					</td>
+					<td>html</td>
+					<td>
+						reload test page
+
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label class=csap> Add: 
+							<select id=number-of-employees>
+								<option value="0" >Add Test Data ...</option>
+								<option>5</option>
+								<option>50</option>
+								<option>500</option>
+							</select> 
+						</label>
+							
+					</td>
+					<td>html</td>
+					<td>
+						add test data
+
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							th:href="@{/employees}">employees</a>
+							
+					</td>
+					<td>html</td>
+					<td>
+						show all employees
+
+					</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+		
+		
+		<table
+			id="error cases"
+			class="csap">
+			<thead>
+
+				<tr>
+					<th>
+						Common Errors
+					</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="missingTemplate">missingTemplate</a>
+					</td>
+					<td>text</td>
+					<td>Missing thymeleaf template</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="malformedTemplate">malformedTemplate</a>
+					</td>
+					<td>text</td>
+					<td>malformedTemplate thymeleaf template. ALL elements must be terminated</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="testException">testException</a>
+					</td>
+					<td>text</td>
+					<td>Spring @RestController Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="testNullPointer">testNullPointer</a>
+					</td>
+					<td>text</td>
+					<td>Spring @Controller Null Pointer Exception Advice</td>
+				</tr>
+
+
+
+			</tbody>
+
+		</table>
+
+
+
+	</article>
+
+</body>
+
+</html>

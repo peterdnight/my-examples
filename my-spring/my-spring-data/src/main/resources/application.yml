@@ -91,6 +91,7 @@ spring:
 
   aop:
     proxy-target-class: true
+    
   thymeleaf:
     mode: HTML
 

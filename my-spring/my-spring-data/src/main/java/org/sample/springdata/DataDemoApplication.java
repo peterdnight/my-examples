@@ -8,13 +8,21 @@ import org.slf4j.LoggerFactory ;
 import org.springframework.beans.factory.annotation.Autowired ;
 import org.springframework.boot.SpringApplication ;
 import org.springframework.boot.autoconfigure.SpringBootApplication ;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry ;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer ;
 
 import com.zaxxer.hikari.HikariDataSource ;
 
 @SpringBootApplication
-public class DataDemoApplication {
+public class DataDemoApplication implements WebMvcConfigurer {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
+
+	public static void main ( String[] args ) {
+
+		SpringApplication.run( DataDemoApplication.class, args ) ;
+
+	}
 
 	//
 	// Autoconfigured
@@ -35,9 +43,11 @@ public class DataDemoApplication {
 
 	}
 
-	public static void main ( String[] args ) {
+	@Override
+	public void addResourceHandlers ( ResourceHandlerRegistry registry ) {
 
-		SpringApplication.run( DataDemoApplication.class, args ) ;
+		// add common cache policies
+		Utils.addResourceHandlers( registry ) ;
 
 	}
 

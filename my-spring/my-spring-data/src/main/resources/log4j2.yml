@@ -100,7 +100,16 @@ Configuration:
           level: warn
         
       - name: com.zaxxer
-        level: debug
+        level: info
+        additivity: false
+        AppenderRef:  
+        - ref: consoleAppender
+        - ref: json-file-appender
+        - ref : errorsAppender
+          level: warn
+        
+      - name: com.zaxxer.hikari.HikariConfig
+        level: info
         additivity: false
         AppenderRef:  
         - ref: consoleAppender
@@ -129,16 +138,28 @@ Configuration:
         - ref: consoleAppender
         - ref: json-file-appender
         
+      
         
       
-#      - name: org.springframework.boot
-#        level: info 
-#        additivity: false
-#        AppenderRef:  
-#        - ref: consoleAppender
-#        - ref: json-file-appender
-#        - ref : errorsAppender
-#          level: warn
+      - name: org.springframework.data
+        level: info 
+        additivity: false
+        AppenderRef:  
+        - ref: consoleAppender
+        - ref: json-file-appender
+        - ref : errorsAppender
+          level: warn
+      
+      - name: org.springframework.orm
+        level: info 
+        additivity: false
+        AppenderRef:  
+        - ref: consoleAppender
+        - ref: json-file-appender
+        - ref : errorsAppender
+          level: warn
+          
+          
           
 #          
 #      - name: org.springframework.boot.autoconfigure.security

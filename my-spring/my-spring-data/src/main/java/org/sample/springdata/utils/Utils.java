@@ -12,6 +12,8 @@ import java.math.RoundingMode ;
 import java.nio.file.Files ;
 import java.nio.file.Path ;
 import java.nio.file.StandardCopyOption ;
+import java.time.LocalDateTime ;
+import java.time.format.DateTimeFormatter ;
 import java.util.ArrayList ;
 import java.util.Arrays ;
 import java.util.EnumSet ;
@@ -47,6 +49,9 @@ import org.springframework.boot.SpringApplication ;
 import org.springframework.core.io.ClassPathResource ;
 import org.springframework.core.io.FileSystemResource ;
 import org.springframework.core.io.Resource ;
+import org.springframework.http.CacheControl ;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry ;
+import org.springframework.web.servlet.resource.VersionResourceResolver ;
 
 import com.fasterxml.jackson.core.JsonProcessingException ;
 import com.fasterxml.jackson.databind.JsonNode ;
@@ -1010,5 +1015,74 @@ public class Utils {
 			}
 
 		}
+	}
+	
+	static public void addResourceHandlers ( ResourceHandlerRegistry registry ) {
+		
+
+		var versionForJsModules = LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( "HHmmss" ) ) ;
+		logger.info( Utils.highlightHeader( "Module cache key updated: {}" ), versionForJsModules );
+		
+		VersionResourceResolver versionResolver = new VersionResourceResolver( )
+
+				//
+				// note that the match pattern is ANT - unlike resource handler path matching
+				// css path could be added - but generally not needed "/*.css"
+				//
+				.addFixedVersionStrategy(
+						versionForJsModules,
+						"/**/modules/**/*.js" )
+
+				.addContentVersionStrategy( "/**" ) ;
+
+		//
+		// Add in expiration and versionResolver
+		//
+
+		var oneYear = CacheControl.maxAge( 365, TimeUnit.DAYS ) ;
+		
+
+		if ( ! Utils.isCsapFolderSet( ) ) {
+			oneYear = CacheControl.maxAge( 1, TimeUnit.SECONDS ) ;
+		}
+
+		//
+		// all static content
+		//
+		registry
+				.addResourceHandler( "/**" )
+				.addResourceLocations(
+						"classpath:/static/",
+						"classpath:/public/" )
+				.setCacheControl( oneYear ) ;
+
+		//
+		// all webjars - note version paths eliminate need for cache blowout
+		//
+		registry
+				.addResourceHandler( "/webjars/**" )
+				.addResourceLocations(
+						"classpath:/META-INF/resources/webjars/" )
+				.setCacheControl( oneYear ) ;
+
+		//
+		// css and jss files stored without version requir cache blowout
+		//
+		registry
+				.addResourceHandler( "/css/**", "/js/**" )
+
+				.addResourceLocations(
+						"classpath:/static/css/",
+						"classpath:/public/css/",
+						"classpath:/static/js/",
+						"classpath:/public/js/" )
+
+				.setCacheControl( oneYear )
+
+				// generate cache blowing strategy file-asdfasfsdfs.css
+				.resourceChain( true ).addResolver( versionResolver ) ;
+
+
+
 	}
 }
