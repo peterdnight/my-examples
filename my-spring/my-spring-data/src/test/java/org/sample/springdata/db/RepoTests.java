@@ -8,8 +8,10 @@ import java.util.concurrent.ThreadLocalRandom ;
 import java.util.stream.IntStream ;
 
 import org.junit.jupiter.api.BeforeAll ;
+import org.junit.jupiter.api.Disabled ;
 import org.junit.jupiter.api.Test ;
 import org.junit.jupiter.api.TestInstance ;
+import org.sample.springdata.utils.EmpHelpers ;
 import org.sample.springdata.utils.Utils ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
@@ -18,11 +20,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication ;
 import org.springframework.boot.autoconfigure.domain.EntityScan ;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest ;
 import org.springframework.context.ApplicationContext ;
+import org.springframework.data.domain.PageRequest ;
+import org.springframework.data.domain.Sort ;
 
 @TestInstance ( TestInstance.Lifecycle.PER_CLASS )
 
 @DataJpaTest ( showSql = false )
-public class RepoTests {
+final class RepoTests {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
 
@@ -32,10 +36,13 @@ public class RepoTests {
 
 	}
 
-	static final int TEST_INSERTS = 1000 ;
-	static final int MIN_AGE = 20 ;
-	static final int MIDDLE_AGE = 50 ;
-	static final int MAX_AGE = 99 ;
+	static final int TEST_RERCORD_COUNT = 1000 ;
+
+	@Autowired
+	ApplicationContext applicationContext ;
+
+	@Autowired
+	EmployeeRepository employeeRepository ;
 
 	@BeforeAll
 	void beforeAll ( )
@@ -43,30 +50,11 @@ public class RepoTests {
 
 		logger.info( Utils.testHeader( "loading test data" ) ) ;
 
-		IntStream.range( 1, TEST_INSERTS )
+		IntStream.rangeClosed( 1, TEST_RERCORD_COUNT )
 				.forEach( uniqueId -> {
 
-					var ageRandomLimit = LocalDate.now( ).getYear( ) - MIDDLE_AGE ;
-
-					if ( uniqueId % 3 == 0 ) {
-
-						ageRandomLimit = LocalDate.now( ).getYear( ) - MAX_AGE ;
-
-					}
-
-					long minDay = LocalDate.of( ageRandomLimit, 1, 1 ).toEpochDay( ) ;
-					long maxDay = LocalDate.of( LocalDate.now( ).getYear( ) - MIN_AGE - 1, 12, 31 ).toEpochDay( ) ;
-					long randomDay = ThreadLocalRandom.current( ).nextLong( minDay, maxDay ) ;
-					var randomBirthDay = LocalDate.ofEpochDay( randomDay ) ; // LocalDate.now( ) ;
-
-					var randomAge = Period.between( randomBirthDay, LocalDate.now( ) ).getYears( ) ;
-
-					Employee emp = new Employee(
-							"sam-" + Utils.buildRandomString( 3 ),
-							randomAge,
-							LocalDate.ofEpochDay( randomDay ) ) ;
-
-					repository.save( emp ) ;
+					employeeRepository.save(
+							EmpHelpers.buildRandomizeEmployee( uniqueId ) ) ;
 
 				} ) ;
 
@@ -76,16 +64,13 @@ public class RepoTests {
 	// Disable scanning based on classpath
 	//
 	@SpringBootApplication
-	@EntityScan ( basePackageClasses = EmployeeRepo.class )
-	public static class Simple_Application {
+	@EntityScan ( basePackageClasses = EmployeeRepository.class )
+	static class Simple_Application {
 
 	}
 
-	@Autowired
-	ApplicationContext applicationContext ;
-
 	@Test
-	public void contextLoads ( ) {
+	void contextLoads ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
@@ -97,57 +82,64 @@ public class RepoTests {
 
 	}
 
-	@Autowired
-	EmployeeRepo repository ;
-
 	@Test
-	void list_all_employees_younger_than ( ) {
+	void find_employees_with_birthdays_in_current_month ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		var employees = repository.findByAgeLessThan( MIDDLE_AGE ) ;
+		var testMonth = EmpHelpers.TEST_MONTH ;
+
+		var employees = employeeRepository.findByBirthMonth( testMonth ) ;
 
 		logger.info( Utils.buildDescription( "employees: ",
-				"younger then " + MIDDLE_AGE, employees.size( ),
+				"born in month " + testMonth, employees.size( ),
 				"first", employees.get( 0 ),
 				"last", employees.get( employees.size( ) - 1 ) ) ) ;
 
-		assertThat( employees.size( ) ).isGreaterThan( TEST_INSERTS / 4 ) ;
-
-		assertThat( employees.get( 0 ).getAge( ) ).isLessThan( TEST_INSERTS / 4 ) ;
+		assertThat( employees.size( ) ).isGreaterThan( 0 ) ;
 
 	}
 
 	@Test
-	void verify_no_children ( ) {
+	void find_employees_with_birthdays_in_current_month_paginated ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		var employees = repository.findByAgeLessThan( MIN_AGE ) ;
+		var testMonth = EmpHelpers.TEST_MONTH ;
 
-		logger.info( Utils.buildDescription( "employees: ",
-				"younger then " + MIDDLE_AGE, employees.size( ),
-				"employees", employees) ) ;
+		var pageAndSortSelector = PageRequest.of( 0, 10, Sort.by( "name" ) ) ;
+		var employeesPageable = employeeRepository.findAll( pageAndSortSelector ) ;
 
-		assertThat( employees.size( ) ).isEqualTo( 0 ) ;
+		employeesPageable = employeeRepository.findByBirthMonthPageable( testMonth, pageAndSortSelector ) ;
 
+		logger.info( Utils.buildDescription(
+				"employees: ",
+				"pageAndSortSelector", pageAndSortSelector,
+				"page - current", employeesPageable.getNumber( ),
+				"count - current", employeesPageable.getNumberOfElements( ),
+				"page - total", employeesPageable.getTotalPages( ),
+				"count - total", employeesPageable.getTotalElements( ),
+				"first", employeesPageable.stream( ).findFirst( ) //
+
+		) ) ;
+
+		assertThat( employeesPageable.getTotalElements( ) )
+				.isGreaterThan( ( TEST_RERCORD_COUNT / ( EmpHelpers.MONTH_MODULA_SELECTOR + 1 ) ) - 10 ) ;
 
 	}
 
 	@Test
-	void add_employee ( ) {
+	void count_all_employees ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		Employee emp = new Employee( "junit-1", 99, LocalDate.now( ) ) ;
+		var numberOfEmployees = employeeRepository.count( ) ;
 
-		repository.save( emp ) ;
+		logger.info( Utils.buildDescription(
+				"generated select count: ",
+				"numberOfEmployees", numberOfEmployees ) ) ;
 
-		logger.info( "added: ", emp.toString( ) ) ;
-
-		assertThat( emp.getId( ) )
-				.as( "ID" )
-				.isNotNull( ) ;
+		assertThat( numberOfEmployees ).isGreaterThanOrEqualTo( TEST_RERCORD_COUNT ) ;
 
 	}
 
@@ -156,14 +148,112 @@ public class RepoTests {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		var employees = repository.findAll( ) ;
+		var employees = employeeRepository.findAll( ) ;
 
-		logger.info( Utils.buildDescription( "employees: ",
+		logger.info( Utils.buildDescription(
+				"employees: ",
 				"total", employees.size( ),
 				"first", employees.get( 0 ),
 				"last", employees.get( employees.size( ) - 1 ) ) ) ;
 
-		assertThat( employees.size( ) ).isGreaterThan( TEST_INSERTS / 4 ) ;
+		assertThat( employees.size( ) ).isGreaterThan( TEST_RERCORD_COUNT / 4 ) ;
+
+	}
+
+	@Test
+	void list_all_employees_paginated ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var pageAndSortSelector = PageRequest.of( 0, 10, Sort.by( "name" ) ) ;
+		var employeesPageable = employeeRepository.findAll( pageAndSortSelector ) ;
+
+		logger.info( Utils.buildDescription(
+				"employees: ",
+				"pageAndSortSelector", pageAndSortSelector,
+				"page - current", employeesPageable.getNumber( ),
+				"count - current", employeesPageable.getNumberOfElements( ),
+				"page - total", employeesPageable.getTotalPages( ),
+				"count - total", employeesPageable.getTotalElements( ),
+				"first", employeesPageable.stream( ).findFirst( ) //
+
+		) ) ;
+
+		assertThat( employeesPageable.getTotalPages( ) )
+				.isGreaterThan( ( TEST_RERCORD_COUNT / 10 ) - 10 ) ;
+
+	}
+
+	@Test
+	void find_employees_by_birthday ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var employee = EmpHelpers.buildRandomizeEmployee( 19 ) ;
+
+		employeeRepository.save( employee ) ;
+
+		logger.info( "added: {}", employee.toString( ) ) ;
+
+		assertThat( employee.getId( ) )
+				.as( "ID" )
+				.isNotNull( ) ;
+
+		var matchingEmployees = employeeRepository.findByBirthDay( employee.getBirthDay( ) ) ;
+
+		logger.info( Utils.buildDescription( "employees birthdays: ",
+				"number", matchingEmployees.size( ),
+				"matchingEmployees", matchingEmployees ) ) ;
+
+	}
+
+	@Test
+	void list_all_employees_younger_than ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var employees = employeeRepository.findByAgeLessThan( EmpHelpers.MIDDLE_AGE ) ;
+
+		logger.info( Utils.buildDescription( "employees: ",
+				"younger then " + EmpHelpers.MIDDLE_AGE, employees.size( ),
+				"first", employees.get( 0 ),
+				"last", employees.get( employees.size( ) - 1 ) ) ) ;
+
+		assertThat( employees.size( ) ).isGreaterThan( TEST_RERCORD_COUNT / 4 ) ;
+
+		assertThat( employees.get( 0 ).getAge( ) ).isLessThan( TEST_RERCORD_COUNT / 4 ) ;
+
+	}
+
+	@Test
+	void verify_all_employees_are_adults ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var employees = employeeRepository.findByAgeLessThan( EmpHelpers.MIN_AGE ) ;
+
+		logger.info( Utils.buildDescription( "employees: ",
+				"younger then " + EmpHelpers.MIDDLE_AGE, employees.size( ),
+				"employees", employees ) ) ;
+
+		assertThat( employees.size( ) ).isEqualTo( 0 ) ;
+
+	}
+
+	@Test
+	void add_employee ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var emp = EmpHelpers.buildRandomizeEmployee( 19 ) ;
+
+		employeeRepository.save( EmpHelpers.buildRandomizeEmployee( 19 ) ) ;
+
+		logger.info( "added: ", emp.toString( ) ) ;
+
+		assertThat( emp.getId( ) )
+				.as( "ID" )
+				.isNotNull( ) ;
 
 	}
 

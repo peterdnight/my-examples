@@ -239,7 +239,7 @@ public class Utils {
 		} catch ( Exception e ) {
 
 			System.out.println( "ERROR: Failed to resolve path: " + logConfiguration
-					+ "\n " + Utils.buildCsapStack( e ) ) ;
+					+ "\n " + Utils.buildSampleStack( e ) ) ;
 			System.exit( 99 ) ;
 
 		}
@@ -647,7 +647,7 @@ public class Utils {
 
 		} catch ( JsonProcessingException e ) {
 
-			logger.warn( "Failed rendering a json object: {}", Utils.buildCsapStack( e ) ) ;
+			logger.warn( "Failed rendering a json object: {}", Utils.buildSampleStack( e ) ) ;
 
 		}
 
@@ -712,7 +712,7 @@ public class Utils {
 
 		} catch ( Exception e ) {
 
-			logger.warn( buildCsapStack( e ) ) ;
+			logger.warn( buildSampleStack( e ) ) ;
 
 		}
 
@@ -739,9 +739,9 @@ public class Utils {
 
 	}
 
-	public static String buildCsapStack ( Throwable possibleNestedThrowable ) {
+	public static String buildSampleStack ( Throwable possibleNestedThrowable ) {
 
-		return buildFilteredStack( possibleNestedThrowable, "csap" ) ;
+		return buildFilteredStack( possibleNestedThrowable, "sample" ) ;
 
 	}
 
