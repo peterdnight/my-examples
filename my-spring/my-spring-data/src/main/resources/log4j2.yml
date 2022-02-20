@@ -99,17 +99,26 @@ Configuration:
         - ref : errorsAppender
           level: warn
         
-      - name: com.zaxxer
-        level: info
-        additivity: false
-        AppenderRef:  
-        - ref: consoleAppender
-        - ref: json-file-appender
-        - ref : errorsAppender
-          level: warn
+#      - name: com.zaxxer
+#        level: info
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref: json-file-appender
+#        - ref : errorsAppender
+#          level: warn
+#        
+#      - name: com.zaxxer.hikari.HikariConfig
+#        level: info
+#        additivity: false
+#        AppenderRef:  
+#        - ref: consoleAppender
+#        - ref: json-file-appender
+#        - ref : errorsAppender
+#          level: warn
         
-      - name: com.zaxxer.hikari.HikariConfig
-        level: info
+      - name: org.hibernate.stat
+        level: debug
         additivity: false
         AppenderRef:  
         - ref: consoleAppender

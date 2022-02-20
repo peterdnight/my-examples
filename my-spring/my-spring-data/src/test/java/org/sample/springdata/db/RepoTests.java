@@ -2,11 +2,11 @@ package org.sample.springdata.db ;
 
 import static org.assertj.core.api.Assertions.assertThat ;
 
-import java.time.LocalDate ;
-import java.time.Period ;
-import java.util.concurrent.ThreadLocalRandom ;
+import java.util.Arrays ;
+import java.util.stream.Collectors ;
 import java.util.stream.IntStream ;
 
+import org.hibernate.engine.internal.StatisticalLoggingSessionEventListener ;
 import org.junit.jupiter.api.BeforeAll ;
 import org.junit.jupiter.api.Disabled ;
 import org.junit.jupiter.api.Test ;
@@ -21,11 +21,23 @@ import org.springframework.boot.autoconfigure.domain.EntityScan ;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest ;
 import org.springframework.context.ApplicationContext ;
 import org.springframework.data.domain.PageRequest ;
+import org.springframework.data.domain.Pageable ;
 import org.springframework.data.domain.Sort ;
+import org.springframework.test.context.TestPropertySource ;
 
 @TestInstance ( TestInstance.Lifecycle.PER_CLASS )
 
 @DataJpaTest ( showSql = false )
+
+@TestPropertySource ( properties = {
+		"spring.jpa.properties.hibernate.generate_statistics=true",
+		"logging.level.org.hibernate=warn",
+		"logging.level.org.hibernate.engine.internal=warn",
+		"logging.level.org.springframework.orm=info",
+		"spring.jpa.properties.hibernate.jdbc.batch_size=10",
+		"spring.jpa.properties.hibernate.order_inserts=true",
+} )
+
 final class RepoTests {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
@@ -36,7 +48,7 @@ final class RepoTests {
 
 	}
 
-	static final int TEST_RERCORD_COUNT = 1000 ;
+	static final int TEST_RECORD_COUNT = 1000 ;
 
 	@Autowired
 	ApplicationContext applicationContext ;
@@ -45,18 +57,17 @@ final class RepoTests {
 	EmployeeRepository employeeRepository ;
 
 	@BeforeAll
-	void beforeAll ( )
-		throws Exception {
+	void beforeAll ( ) {
 
 		logger.info( Utils.testHeader( "loading test data" ) ) ;
+		
+		Utils.setLogToInfo( StatisticalLoggingSessionEventListener.class.getName( ) );
 
-		IntStream.rangeClosed( 1, TEST_RERCORD_COUNT )
-				.forEach( uniqueId -> {
+		var testEmployees = IntStream.rangeClosed( 1, TEST_RECORD_COUNT )
+				.mapToObj( EmpHelpers::buildRandomizeEmployee )
+				.collect( Collectors.toList( ) ) ;
 
-					employeeRepository.save(
-							EmpHelpers.buildRandomizeEmployee( uniqueId ) ) ;
-
-				} ) ;
+		employeeRepository.saveAll( testEmployees ) ;
 
 	}
 
@@ -74,7 +85,15 @@ final class RepoTests {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		logger.info( "beans: {}", applicationContext.getBeanDefinitionCount( ) ) ;
+		var beanListing = Arrays.stream( applicationContext.getBeanDefinitionNames( ) )
+				.map( name -> {
+
+					return Utils.lpad( name ) ;
+
+				} )
+				.collect( Collectors.joining( "\n\t" ) ) ;
+
+		logger.info( "beans: {} \n {}", applicationContext.getBeanDefinitionCount( ) ) ;
 
 		assertThat( applicationContext.getBeanDefinitionCount( ) )
 				.as( "limited beans loaded for @DataJpaTest" )
@@ -83,7 +102,7 @@ final class RepoTests {
 	}
 
 	@Test
-	void find_employees_with_birthdays_in_current_month ( ) {
+	void find_fast_employees_with_birthdays_in_current_month ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
@@ -101,16 +120,15 @@ final class RepoTests {
 	}
 
 	@Test
-	void find_employees_with_birthdays_in_current_month_paginated ( ) {
+	void find_fast_employees_with_birthdays_in_current_month_paginated ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
 		var testMonth = EmpHelpers.TEST_MONTH ;
 
 		var pageAndSortSelector = PageRequest.of( 0, 10, Sort.by( "name" ) ) ;
-		var employeesPageable = employeeRepository.findAll( pageAndSortSelector ) ;
-
-		employeesPageable = employeeRepository.findByBirthMonthPageable( testMonth, pageAndSortSelector ) ;
+		//Pageable pageAndSortSelector = PageRequest.of(0, 10);
+		var employeesPageable = employeeRepository.findAllByBirthMonth( testMonth, pageAndSortSelector ) ;
 
 		logger.info( Utils.buildDescription(
 				"employees: ",
@@ -124,7 +142,53 @@ final class RepoTests {
 		) ) ;
 
 		assertThat( employeesPageable.getTotalElements( ) )
-				.isGreaterThan( ( TEST_RERCORD_COUNT / ( EmpHelpers.MONTH_MODULA_SELECTOR + 1 ) ) - 10 ) ;
+				.isGreaterThan( ( TEST_RECORD_COUNT / ( EmpHelpers.MONTH_MODULA_SELECTOR + 1 ) ) - 10 ) ;
+
+	}
+
+	@Test
+	void find_slow_employees_with_birthdays_in_current_month ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var testMonth = EmpHelpers.TEST_MONTH ;
+
+		var employees = employeeRepository.findSlowByBirthMonth( testMonth ) ;
+
+		logger.info( Utils.buildDescription( "employees: ",
+				"born in month " + testMonth, employees.size( ),
+				"first", employees.get( 0 ),
+				"last", employees.get( employees.size( ) - 1 ) ) ) ;
+
+		assertThat( employees.size( ) ).isGreaterThan( 0 ) ;
+
+	}
+
+	@Test
+	void find_slow_employees_with_birthdays_in_current_month_paginated ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var testMonth = EmpHelpers.TEST_MONTH ;
+
+		var pageAndSortSelector = PageRequest.of( 0, 10, Sort.by( "name" ) ) ;
+		var employeesPageable = employeeRepository.findAll( pageAndSortSelector ) ;
+
+		employeesPageable = employeeRepository.findSlowByBirthMonthPageable( testMonth, pageAndSortSelector ) ;
+
+		logger.info( Utils.buildDescription(
+				"employees: ",
+				"pageAndSortSelector", pageAndSortSelector,
+				"page - current", employeesPageable.getNumber( ),
+				"count - current", employeesPageable.getNumberOfElements( ),
+				"page - total", employeesPageable.getTotalPages( ),
+				"count - total", employeesPageable.getTotalElements( ),
+				"first", employeesPageable.stream( ).findFirst( ) //
+
+		) ) ;
+
+		assertThat( employeesPageable.getTotalElements( ) )
+				.isGreaterThan( ( TEST_RECORD_COUNT / ( EmpHelpers.MONTH_MODULA_SELECTOR + 1 ) ) - 10 ) ;
 
 	}
 
@@ -139,7 +203,7 @@ final class RepoTests {
 				"generated select count: ",
 				"numberOfEmployees", numberOfEmployees ) ) ;
 
-		assertThat( numberOfEmployees ).isGreaterThanOrEqualTo( TEST_RERCORD_COUNT ) ;
+		assertThat( numberOfEmployees ).isGreaterThanOrEqualTo( TEST_RECORD_COUNT ) ;
 
 	}
 
@@ -156,7 +220,7 @@ final class RepoTests {
 				"first", employees.get( 0 ),
 				"last", employees.get( employees.size( ) - 1 ) ) ) ;
 
-		assertThat( employees.size( ) ).isGreaterThan( TEST_RERCORD_COUNT / 4 ) ;
+		assertThat( employees.size( ) ).isGreaterThan( TEST_RECORD_COUNT / 4 ) ;
 
 	}
 
@@ -180,7 +244,7 @@ final class RepoTests {
 		) ) ;
 
 		assertThat( employeesPageable.getTotalPages( ) )
-				.isGreaterThan( ( TEST_RERCORD_COUNT / 10 ) - 10 ) ;
+				.isGreaterThan( ( TEST_RECORD_COUNT / 10 ) - 10 ) ;
 
 	}
 
@@ -219,9 +283,9 @@ final class RepoTests {
 				"first", employees.get( 0 ),
 				"last", employees.get( employees.size( ) - 1 ) ) ) ;
 
-		assertThat( employees.size( ) ).isGreaterThan( TEST_RERCORD_COUNT / 4 ) ;
+		assertThat( employees.size( ) ).isGreaterThan( TEST_RECORD_COUNT / 4 ) ;
 
-		assertThat( employees.get( 0 ).getAge( ) ).isLessThan( TEST_RERCORD_COUNT / 4 ) ;
+		assertThat( employees.get( 0 ).getAge( ) ).isLessThan( TEST_RECORD_COUNT / 4 ) ;
 
 	}
 
@@ -240,18 +304,35 @@ final class RepoTests {
 
 	}
 
+	//
+	// Batch disabled on hsqldb in memory?
+	//
+	@Disabled
+	@Test
+	void saveBatch ( ) {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var testEmployees = IntStream.rangeClosed( 1, TEST_RECORD_COUNT )
+				.mapToObj( EmpHelpers::buildRandomizeEmployee )
+				.collect( Collectors.toList( ) ) ;
+
+		employeeRepository.saveAll( testEmployees ) ;
+
+	}
+
 	@Test
 	void add_employee ( ) {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-		var emp = EmpHelpers.buildRandomizeEmployee( 19 ) ;
+		var employee = EmpHelpers.buildRandomizeEmployee( 19 ) ;
 
-		employeeRepository.save( EmpHelpers.buildRandomizeEmployee( 19 ) ) ;
+		employeeRepository.save( employee ) ;
 
-		logger.info( "added: ", emp.toString( ) ) ;
+		logger.info( "added: {}", employee.toString( ) ) ;
 
-		assertThat( emp.getId( ) )
+		assertThat( employee.getId( ) )
 				.as( "ID" )
 				.isNotNull( ) ;
 
