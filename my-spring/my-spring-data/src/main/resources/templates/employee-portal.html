@@ -7,11 +7,6 @@
 <head>
 <title>Employee Portal</title>
 
-<link th:href="@{ /css/csap-2.css}" rel="stylesheet" type="text/css"
-	media="screen" />
-	
-<script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
-
 <!--
     <script th:src="@{/js/simple.js}"></script>
     -->
@@ -21,7 +16,7 @@ article.content {
 	padding: 2em;
 }
 
-table.csap {
+body table.csap {
 	width: 100%;
 	margin-bottom: 3em;
 }
@@ -54,11 +49,15 @@ const BASE_URL = [[@{ / }]];
 
 </script>
 
+<script th:replace="~{ fragments/demo-includes :: pageContent }"></script>
+
 <script
 	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/spring-data-demo/modules/demo-main.js')} }"
 	th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
 
+
 	
+
 </head>
 
 <body class="csap-scrollable theme-dark theme-blue">
@@ -87,12 +86,12 @@ const BASE_URL = [[@{ / }]];
 					<td>
 						<a
 							class="csap-link"
-							th:href="@{/}">LandingPage</a>
+							th:href="@{/}">employee-portal</a>
 							
 					</td>
 					<td>html</td>
 					<td>
-						reload test page
+						reload portal
 
 					</td>
 				</tr>
@@ -102,9 +101,9 @@ const BASE_URL = [[@{ / }]];
 						<label class=csap> Add: 
 							<select id=number-of-employees>
 								<option value="0" >Add Test Data ...</option>
-								<option>5</option>
-								<option>50</option>
 								<option>500</option>
+								<option>1000</option>
+								<option>5</option>
 							</select> 
 						</label>
 							
@@ -119,8 +118,9 @@ const BASE_URL = [[@{ / }]];
 				<tr>
 					<td>
 						<a
+							id=show-all-employees
 							class="csap-link"
-							th:href="@{/employees}">employees</a>
+							th:href="@{/employees}">show all employees</a>
 							
 					</td>
 					<td>html</td>
@@ -129,6 +129,58 @@ const BASE_URL = [[@{ / }]];
 
 					</td>
 				</tr>
+
+				<tr>
+					<td>
+						<a
+							id=show-all-birthdays
+							class="csap-link"
+							th:href="@{/birthMonthEmployees}">show all birthdays in current month</a>
+							
+					</td>
+					<td>html</td>
+					<td>
+						show all birthdays in month
+
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label class=csap-form >
+							<span>page size:</span>
+							
+							<input
+								id=page-size
+								value="5"/>
+			
+						</label>
+						<label class=csap-form >
+							<span>page number:</span>
+							
+							<input
+								id=page-number
+								value="0"/>
+			
+						</label>
+						
+						
+						<a
+							id=show-all-birthdays-pageable
+							class="csap-link"
+							th:href="@{/birthdayEmployeesPageable}">show paginated birthdays</a>
+							
+					</td>
+					<td>html</td>
+					<td>
+						birthdays in current month, with pagination to enable traversal of large data sets
+						<div class=csap-red>
+						server side validation check: page size limit is 100, anything else will be denied
+						</div>
+
+					</td>
+				</tr>
+
 
 
 			</tbody>

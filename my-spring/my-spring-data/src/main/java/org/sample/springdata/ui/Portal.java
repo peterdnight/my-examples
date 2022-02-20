@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory ;
 import org.springframework.stereotype.Controller ;
 import org.springframework.ui.Model ;
 import org.springframework.web.bind.annotation.GetMapping ;
+import org.springframework.web.bind.annotation.RequestMapping ;
 
 @Controller
 public class Portal {
@@ -62,6 +63,28 @@ public class Portal {
 		// templates are in: resources/templates/*.html
 		// leading "/" is critical when running in a jar
 		return "/missingTemplate" ;
+
+	}
+	
+
+	@GetMapping ( "/testException" )
+	public String testException ( ) {
+
+		logger.info( "simple log" ) ;
+		throw new RuntimeException( "Spring Rest Exception" ) ;
+
+	}
+
+	@GetMapping ( "/testNullPointer" )
+	public String testNullPointer ( ) {
+
+		if ( System.currentTimeMillis( ) > 1 ) {
+
+			throw new NullPointerException( "For testing only" ) ;
+
+		}
+
+		return "hello" ;
 
 	}
 

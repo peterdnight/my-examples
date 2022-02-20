@@ -2,7 +2,11 @@ package org.sample.springdata.api ;
 
 import java.time.LocalDate ;
 import java.util.List ;
+import java.util.stream.Collectors ;
 import java.util.stream.IntStream ;
+
+import javax.validation.constraints.Max ;
+import javax.validation.constraints.Min ;
 
 import org.sample.springdata.db.Employee ;
 import org.sample.springdata.db.EmployeeRepository ;
@@ -12,6 +16,7 @@ import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.data.domain.PageRequest ;
 import org.springframework.data.domain.Sort ;
+import org.springframework.validation.annotation.Validated ;
 import org.springframework.web.bind.annotation.DeleteMapping ;
 import org.springframework.web.bind.annotation.GetMapping ;
 import org.springframework.web.bind.annotation.PostMapping ;
@@ -23,7 +28,12 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 import com.fasterxml.jackson.databind.node.ArrayNode ;
 
 @RestController ( "/api" )
-public class EmployeeRestController {
+
+@Validated
+
+public class EmployeeRestApis {
+
+	public static final int MAX_PAGE_SIZE = 100 ;
 
 	public static final String BIRTHDAY_EMPLOYEES_PAGEABLE = "/birthdayEmployeesPageable" ;
 
@@ -32,46 +42,51 @@ public class EmployeeRestController {
 	EmployeeRepository employeeRepository ;
 	ObjectMapper jsonMapper ;
 
-	public EmployeeRestController ( EmployeeRepository employeeRepository, ObjectMapper jsonMapper ) {
+	public EmployeeRestApis ( EmployeeRepository employeeRepository, ObjectMapper jsonMapper ) {
 
 		this.employeeRepository = employeeRepository ;
 		this.jsonMapper = jsonMapper ;
 
 	}
 
-	@GetMapping ( "/birthdayEmployees" )
-	public List<Employee> getBirthMonthEmployees (  ) {
+	@GetMapping ( "/birthMonthEmployees" )
+	public JsonNode getBirthMonthEmployees ( ) {
 
 		logger.info( Utils.highlightHeader( "finding birth Month employees" ) ) ;
 
-		var employeePage = employeeRepository.findAllByBirthMonth(
-				LocalDate.now( ).getMonthValue( ),
-				PageRequest.of( 0, 10, Sort.by( "name" ) ) //
-		) ;
+		var employees = employeeRepository.findByBirthMonth( LocalDate.now( ).getMonthValue( ) ) ;
 
-		return employeePage.toList( ) ;
+		var birthdayReport = jsonMapper.createObjectNode( ) ;
+		var page = birthdayReport.putObject( "view" ) ;
+		page.put( "totalCount", employees.size( ) ) ;
+		birthdayReport.set( "employees", jsonMapper.convertValue( employees, ArrayNode.class ) ) ;
+
+		return birthdayReport ;
 
 	}
 
 	@GetMapping ( BIRTHDAY_EMPLOYEES_PAGEABLE )
-	public JsonNode getBirthMonthEmployeesPageAble ( 
-	                                                       @RequestParam( defaultValue = "10")  int pageSize, 
-	                                                       @RequestParam( defaultValue = "0")  int pageNumber ) {
+	public JsonNode getBirthMonthEmployeesPageAble (
+														@RequestParam ( defaultValue = "10" ) @Min ( 1 ) @Max ( MAX_PAGE_SIZE ) int pageSize ,
+														@RequestParam ( defaultValue = "0" ) int pageNumber ) {
 
 		logger.info( Utils.highlightHeader( "finding birth Month employees" ) ) ;
 
+		var pageRequest = PageRequest.of( pageNumber, pageSize, Sort.by( "name" ) ) ;
+
 		var employeePage = employeeRepository.findAllByBirthMonth(
 				LocalDate.now( ).getMonthValue( ),
-				PageRequest.of( pageNumber, pageSize, Sort.by( "name" ) ) //
+				pageRequest //
 		) ;
-		
+
 		var birthdayReport = jsonMapper.createObjectNode( ) ;
 		var page = birthdayReport.putObject( "view" ) ;
-		page.put( "currentPage", employeePage.getNumber( )) ;
-		page.put( "currentCount", employeePage.getNumberOfElements( )) ;
-		page.put( "totalPages", employeePage.getTotalPages( )) ;
-		page.put( "totalCount", employeePage.getTotalElements( )) ;
-		
+		page.put( "pageRequest", pageRequest.toString( ) ) ;
+		page.put( "currentPage", employeePage.getNumber( ) ) ;
+		page.put( "currentCount", employeePage.getNumberOfElements( ) ) ;
+		page.put( "totalPages", employeePage.getTotalPages( ) ) ;
+		page.put( "totalCount", employeePage.getTotalElements( ) ) ;
+
 		birthdayReport.set( "employees", jsonMapper.convertValue( employeePage.toList( ), ArrayNode.class ) ) ;
 
 		return birthdayReport ;
@@ -96,15 +111,13 @@ public class EmployeeRestController {
 
 		logger.info( Utils.highlightHeader( "loading {} employees" ), number ) ;
 
-		result.put( "test ids created", number ) ;
+		result.put( "createTestIdResponse", number ) ;
 
-		IntStream.rangeClosed( 1, number )
-				.forEach( uniqueId -> {
+		var testEmployees = IntStream.rangeClosed( 1, number )
+				.mapToObj( EmpHelpers::buildRandomizeEmployee )
+				.collect( Collectors.toList( ) ) ;
 
-					employeeRepository.save(
-							EmpHelpers.buildRandomizeEmployee( uniqueId ) ) ;
-
-				} ) ;
+		employeeRepository.saveAll( testEmployees ) ;
 
 		return result ;
 

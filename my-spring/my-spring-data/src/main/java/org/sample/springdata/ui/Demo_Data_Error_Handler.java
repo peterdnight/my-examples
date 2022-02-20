@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus ;
 import com.fasterxml.jackson.core.JsonParseException ;
 
 @ControllerAdvice
-public class Error_Handling {
+public class Demo_Data_Error_Handler {
 
 	final Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
 

@@ -13,7 +13,7 @@ import org.hibernate.engine.internal.StatisticalLoggingSessionEventListener ;
 import org.junit.jupiter.api.BeforeAll ;
 import org.junit.jupiter.api.Test ;
 import org.junit.jupiter.api.TestInstance ;
-import org.sample.springdata.api.EmployeeRestController ;
+import org.sample.springdata.api.EmployeeRestApis ;
 import org.sample.springdata.db.EmployeeRepository ;
 import org.sample.springdata.utils.EmpHelpers ;
 import org.sample.springdata.utils.Utils ;
@@ -54,7 +54,7 @@ public class HttpEndToEndTests {
 	ApplicationContext applicationContext ;
 
 	@Autowired
-	EmployeeRestController employeeRestController ;
+	EmployeeRestApis employeeRestController ;
 
 	@Autowired
 	EmployeeRepository employeeRepository ;
@@ -115,6 +115,32 @@ public class HttpEndToEndTests {
 	}
 
 	@Test
+	public void verify_max_page_size ( @Autowired MockMvc mockMvc )
+		throws Exception {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		// mock does much validation.....
+		var resultActions = mockMvc.perform(
+				get( EmployeeRestApis.BIRTHDAY_EMPLOYEES_PAGEABLE )
+
+						.param( "pageSize", EmployeeRestApis.MAX_PAGE_SIZE + "0" )
+						.param( "pageNumber", "0" ) //
+		) ;
+
+		//
+		var errorReport = resultActions
+				.andExpect( status( ).isInternalServerError( ) )
+				.andReturn( ).getResponse( ).getContentAsString( ) ;
+
+		logger.info( "errorReport: {}", errorReport ) ;
+
+//		assertThat( errorReport )
+//				.contains( "peter" ) ;
+
+	}
+
+	@Test
 	public void http_get_birthday_report ( @Autowired MockMvc mockMvc )
 		throws Exception {
 
@@ -122,7 +148,7 @@ public class HttpEndToEndTests {
 
 		// mock does much validation.....
 		var resultActions = mockMvc.perform(
-				get( EmployeeRestController.BIRTHDAY_EMPLOYEES_PAGEABLE )
+				get( EmployeeRestApis.BIRTHDAY_EMPLOYEES_PAGEABLE )
 
 						.param( "pageSize", "12" )
 						.param( "pageNumber", "0" )
@@ -136,16 +162,15 @@ public class HttpEndToEndTests {
 
 		var birthDayReport = jsonMapper.readTree( result ) ;
 
-		logger.info( "view report:\n {} \n, first Employee: {}", 
-				Utils.jsonPrint( birthDayReport.path( "view" ) ) , 
+		logger.info( "view report:\n {} \n, first Employee: {}",
+				Utils.jsonPrint( birthDayReport.path( "view" ) ),
 				Utils.jsonPrint( birthDayReport.path( "employees" ).path( 0 ) ) ) ;
-		
 
 		assertThat( birthDayReport.path( "view" ).path( "currentCount" ).asInt( ) )
 				.isGreaterThan( 0 ) ;
 
 	}
- 
+
 	@Test
 	public void http_get_employee_portal ( @Autowired MockMvc mockMvc )
 		throws Exception {
@@ -164,10 +189,9 @@ public class HttpEndToEndTests {
 				.andReturn( ).getResponse( ).getContentAsString( ) ;
 
 		logger.debug( "result:\n {}", employeeHtmlReport ) ;
-		
 
 		assertThat( employeeHtmlReport )
-				.contains( "Null Pointer Exception Advice") ;
+				.contains( "Null Pointer Exception Advice" ) ;
 
 	}
 

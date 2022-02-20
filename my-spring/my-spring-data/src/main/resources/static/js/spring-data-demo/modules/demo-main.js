@@ -36,44 +36,89 @@ require([], function() {
 			})
 
 			function initialize() {
-				console.log("\n\n\n --------  Starting module initialization  -------- \n\n\n");
+				console.log("\n\n\n --------  Starting module initialization  2-------- \n\n\n");
+
+//				$("table a.csap-link").click(function(e) {
+//					e.preventDefault();
+//					var url = $(this).attr('href');
+//					window.open(url, '_blank');
+//				});
+				CsapCommon.configureCsapAlertify();
+
+				// alertify.csapWarning( "started" ) ;
 
 
-				//CsapCommon.configureCsapAlertify() ;
-				
-				let $numberOfEmployeesToAdd = $("#number-of-employees") ;
-				
-				$numberOfEmployeesToAdd.change( function () {
-					
-					let numberSelected = $numberOfEmployeesToAdd.val()  ;
-					
-					if ( numberSelected == 0 ) {
-						return ;
+
+				let $numberOfEmployeesToAdd = $("#number-of-employees");
+
+
+
+
+				$numberOfEmployeesToAdd.change(function() {
+
+					let numberSelected = $numberOfEmployeesToAdd.val();
+
+					if (numberSelected == 0) {
+						return;
 					}
-					
+
 
 					let parameters = {
 						number: numberSelected
 					};
-					
-					console.log( `parameters: `, parameters) ;
-					
+
+					console.log(`parameters: `, parameters);
+
 					let url = BASE_URL + "test-data";
 					$.post(url, parameters)
 
-						.done(function(fileContents) {
+						.done(function(jsonResponse) {
+							alertify.csapInfo(JSON.stringify(jsonResponse, null, "\t"));
 							//console.log( `inlineEdit{} `, fileContents ) ;
 						})
-	
+
 						.fail(function(jqXHR, textStatus, errorThrown) {
 							alertify.alert("Failed Operation: " + jqXHR.statusText, "Contact support");
 						}, 'json');
-						
-					$numberOfEmployeesToAdd.val(0) ;
+
+					$numberOfEmployeesToAdd.val(0);
 
 
-				}) ;
+				});
+				
+				let $showAllEmployees = $("#show-all-employees,#show-all-birthdays,#show-all-birthdays-pageable") ;
+				
+				
+				$showAllEmployees.click(function( e ) {
+					e.preventDefault();
 
+					let parameters = {
+						pageSize: $("#page-size").val(),
+						pageNumber:  $("#page-number").val()
+					};
+
+					console.log(`parameters: `, parameters);
+
+					let url = $(this).attr("href");
+			        $.getJSON(
+			                url ,
+			                parameters )
+			
+			                .done( function ( userJson ) {
+			                    alertify.csapInfo(JSON.stringify(userJson, null, "\t"));
+			                } )
+			
+			                .fail( function ( jqXHR, textStatus, errorThrown ) {
+			
+			                    alertify.csapWarning("Failed Operation: " + jqXHR.statusText + "Contact support");
+			                } ) ;
+			                
+
+
+				});
+				
+				
+				
 
 
 			}
