@@ -194,5 +194,27 @@ public class HttpEndToEndTests {
 				.contains( "Null Pointer Exception Advice" ) ;
 
 	}
+	
+
+
+	@Test
+	public void verify_get_date ( @Autowired MockMvc mockMvc ) throws Exception {
+
+		logger.info( Utils.testHeader( ) ) ;
+
+		var urlPath = "/date" ;
+		var resultActions = mockMvc.perform( get( urlPath )
+				.contentType( "application/json" ) )
+				.andExpect( status( ).isOk( ) ) ;
+				
+		
+		var content = resultActions.andReturn( ).getResponse( ).getContentAsString( ) ; 
+		
+
+		logger.info( Utils.buildDescription( "date report",
+				"urlPath", urlPath,
+				"content", content ) ) ;
+
+	}
 
 }

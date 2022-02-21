@@ -93,7 +93,7 @@ public class EmployeeRestApis {
 
 	}
 
-	@GetMapping ( "/employees" )
+	@GetMapping ( "/employee/listing" )
 	public List<Employee> getEmployees ( ) {
 
 		logger.info( Utils.highlightHeader( "finding all employees" ) ) ;
@@ -101,6 +101,19 @@ public class EmployeeRestApis {
 		var employees = employeeRepository.findAll( ) ;
 
 		return employees ;
+
+	}
+
+	@GetMapping ( "/employee/count" )
+	public JsonNode getEmployeeCount ( ) {
+
+		logger.info( Utils.highlightHeader( "Counting employees" ) ) ;
+
+		var result = jsonMapper.createObjectNode( ) ;
+
+		result.put( "count", employeeRepository.count( ) ) ;
+
+		return result ;
 
 	}
 
@@ -137,6 +150,17 @@ public class EmployeeRestApis {
 		result.put( "test ids deleted", countInDb ) ;
 
 		return result ;
+
+	}
+
+	@GetMapping ( "/date" )
+	public JsonNode getDate ( @RequestParam ( defaultValue = "2" ) @Min ( 1 ) @Max ( 2 ) int pageSize ) {
+
+		var resultReport = jsonMapper.createObjectNode( ) ;
+
+		resultReport.put( "date", LocalDate.now( ).toString( ) ) ;
+
+		return resultReport ;
 
 	}
 

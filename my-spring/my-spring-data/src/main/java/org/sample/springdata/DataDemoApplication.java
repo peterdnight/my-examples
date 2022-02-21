@@ -27,19 +27,27 @@ public class DataDemoApplication implements WebMvcConfigurer {
 	//
 	// Autoconfigured
 	//
-	@Autowired
+	@Autowired ( required = false )
 	HikariDataSource dataSource ;
 
 	@PostConstruct
 	public void showSpringBootAutoConfigurations ( ) {
 
-		logger.info( Utils.buildDescription( "DB Settings: spring.datasource.hikari.*",
-				"url", dataSource.getJdbcUrl( ),
-				"user", dataSource.getUsername( ),
-				"cred", dataSource.getPassword( ),
-				"class", dataSource.getDriverClassName( ),
-				"timeout - connect", Utils.autoFormatMillis( dataSource.getConnectionTimeout( ) ),
-				"timeout - idle", Utils.autoFormatMillis( dataSource.getIdleTimeout( ) ) ) ) ;
+		if ( dataSource == null ) {
+			
+			logger.info( "DataSource not configured" );
+
+		} else {
+
+			logger.info( Utils.buildDescription( "DB Settings: spring.datasource.hikari.*",
+					"url", dataSource.getJdbcUrl( ),
+					"user", dataSource.getUsername( ),
+					"cred", dataSource.getPassword( ),
+					"class", dataSource.getDriverClassName( ),
+					"timeout - connect", Utils.autoFormatMillis( dataSource.getConnectionTimeout( ) ),
+					"timeout - idle", Utils.autoFormatMillis( dataSource.getIdleTimeout( ) ) ) ) ;
+
+		}
 
 	}
 

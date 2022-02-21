@@ -4,65 +4,11 @@
 	xmlns:th="http://www.thymeleaf.org">
 
 
-<head>
-<title>Employee Portal</title>
-
-<!--
-    <script th:src="@{/js/simple.js}"></script>
-    -->
-<style>
-
-article.content {
-	padding: 2em;
-}
-
-body table.csap {
-	width: 100%;
-	margin-bottom: 3em;
-}
-
-
-table td:nth-child(1) {
-	width: 15em;
-}
-
-table td:nth-child(2) {
-	width: 5em;
-}
-
-header .noteAlt {
-	font-size: 0.7em;
-	margin: 0;
-	padding: 3px;
-}
-
-div.title {
-	width: 20em;
-	color: black;
-}
-</style>
-
-<script th:inline="javaScript">
-
-
-const BASE_URL = [[@{ / }]];
-
-</script>
-
-<script th:replace="~{ fragments/demo-includes :: pageContent }"></script>
-
-<script
-	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/spring-data-demo/modules/demo-main.js')} }"
-	th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
-
-
-	
-
-</head>
+<head th:replace="~{ employee-portal-head }"></head>
 
 <body class="csap-scrollable theme-dark theme-blue">
 
-	<header>Employee Portal</header>
+	<header>Spring Data Jpa Example</header>
 
 	<article class=content>
 
@@ -98,7 +44,31 @@ const BASE_URL = [[@{ / }]];
 
 				<tr>
 					<td>
-						<label class=csap> Add: 
+						<a
+							id=employee-count-link
+							class="csap-link"
+							th:href="@{/employee/count}">employee count</a>
+							
+					</td>
+					<td>html</td>
+					<td>
+						<div class=csap-blue>
+							<label class=csap-form-inline style="font-size: 2em">
+								<span>Total Employees in DB:</span>
+								
+								<input
+									id=employee-count
+									value="-1"/>
+				
+							</label>
+						</div>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label class=csap>
 							<select id=number-of-employees>
 								<option value="0" >Add Test Data ...</option>
 								<option>500</option>
@@ -106,11 +76,16 @@ const BASE_URL = [[@{ / }]];
 								<option>5</option>
 							</select> 
 						</label>
+						<br/><br/>
+						<label class=csap>
+							<button id=clear-db class=csap-button>Wipe All Data</button>
+						</label>
 							
 					</td>
 					<td>html</td>
 					<td>
-						add test data
+					
+						add / remove test data
 
 					</td>
 				</tr>
@@ -120,7 +95,7 @@ const BASE_URL = [[@{ / }]];
 						<a
 							id=show-all-employees
 							class="csap-link"
-							th:href="@{/employees}">show all employees</a>
+							th:href="@{/employee/listing}">show all employees</a>
 							
 					</td>
 					<td>html</td>
@@ -208,20 +183,14 @@ const BASE_URL = [[@{ / }]];
 					<td>
 						<a
 							class="csap-link"
-							href="missingTemplate">missingTemplate</a>
-					</td>
-					<td>text</td>
-					<td>Missing thymeleaf template</td>
-				</tr>
-
-				<tr>
-					<td>
+							href="/date?pageSize=2">REST Parameter Passes</a>
+						<br/>	
 						<a
 							class="csap-link"
-							href="malformedTemplate">malformedTemplate</a>
+							href="/date?pageSize=3">REST Parameter Fails</a>
 					</td>
 					<td>text</td>
-					<td>malformedTemplate thymeleaf template. ALL elements must be terminated</td>
+					<td>Parameter validation</td>
 				</tr>
 
 				<tr>
@@ -242,6 +211,26 @@ const BASE_URL = [[@{ / }]];
 					</td>
 					<td>text</td>
 					<td>Spring @Controller Null Pointer Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="missingTemplate">missingTemplate</a>
+					</td>
+					<td>text</td>
+					<td>Missing thymeleaf template</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a
+							class="csap-link"
+							href="malformedTemplate">malformedTemplate</a>
+					</td>
+					<td>text</td>
+					<td>malformedTemplate thymeleaf template. ALL elements must be terminated</td>
 				</tr>
 
 

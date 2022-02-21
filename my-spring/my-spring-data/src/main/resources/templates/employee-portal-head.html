@@ -1,0 +1,56 @@
+<head>
+<title>Spring Data Jpa Example</title>
+
+<!--
+    <script th:src="@{/js/simple.js}"></script>
+    -->
+<style>
+
+article.content {
+	padding: 2em;
+}
+
+body table.csap {
+	width: 100%;
+	margin-bottom: 3em;
+	margin-top: 3em;
+}
+
+
+table td:nth-child(1) {
+	width: 15em;
+}
+
+table td:nth-child(2) {
+	width: 5em;
+}
+
+header .noteAlt {
+	font-size: 0.7em;
+	margin: 0;
+	padding: 3px;
+}
+
+div.title {
+	width: 20em;
+	color: black;
+}
+</style>
+
+<script th:inline="javaScript">
+
+
+const BASE_URL = [[@{ / }]];
+
+</script>
+
+<script th:replace="~{ fragments/demo-includes :: pageContent }"></script>
+
+<script
+	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/spring-data-demo/modules/demo-main.js')} }"
+	th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
+
+
+	
+
+</head>

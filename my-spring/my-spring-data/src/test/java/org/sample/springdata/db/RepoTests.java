@@ -71,14 +71,6 @@ final class RepoTests {
 
 	}
 
-	//
-	// Disable scanning based on classpath
-	//
-	@SpringBootApplication
-	@EntityScan ( basePackageClasses = EmployeeRepository.class )
-	static class Simple_Application {
-
-	}
 
 	@Test
 	void contextLoads ( ) {

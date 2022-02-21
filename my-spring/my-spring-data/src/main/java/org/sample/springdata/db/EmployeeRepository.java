@@ -17,7 +17,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	// https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.core-concepts
 	//
 
-	long count ( ) ;
+	//long count ( ) ;
 
 	List<Employee> findByBirthDay ( @Param ( "birthDay" ) LocalDate birthDay ) ;
 
