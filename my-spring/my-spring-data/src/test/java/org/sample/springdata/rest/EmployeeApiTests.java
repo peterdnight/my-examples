@@ -10,8 +10,8 @@ import java.util.List ;
 import java.util.stream.Collectors ;
 import java.util.stream.IntStream ;
 
-import org.hibernate.engine.internal.StatisticalLoggingSessionEventListener ;
 import org.junit.jupiter.api.BeforeAll ;
+import org.junit.jupiter.api.BeforeEach ;
 import org.junit.jupiter.api.Test ;
 import org.junit.jupiter.api.TestInstance ;
 import org.mockito.Mockito ;
@@ -50,17 +50,16 @@ public class EmployeeApiTests {
 
 	@MockBean
 	EmployeeRepository employeeRepository ;
-	
 
 	@Autowired
 	ObjectMapper jsonMapper ;
 
 	static int FIND_PASS_COUNT = EmployeeRestApis.MAX_PAGE_SIZE - 10 ;
-	static int FIND_PASS_MONTH  = LocalDate.now( ).getMonthValue( ) ;
+	static int FIND_PASS_MONTH = LocalDate.now( ).getMonthValue( ) ;
 	List<Employee> testEmployees ;
 
-	@BeforeAll
-	void beforeAll ( ) {
+	@BeforeEach
+	void beforeEach ( ) {
 
 		logger.info( Utils.testHeader( "build mock objects" ) ) ;
 
@@ -128,9 +127,8 @@ public class EmployeeApiTests {
 		logger.info( Utils.buildDescription( "birthday report",
 				"urlPath", urlPath,
 				"content", content ) ) ;
-		
+
 		var pageReport = jsonMapper.readTree( content ) ;
-		
 
 		assertThat( pageReport.path( "employees" ).size( ) )
 				.isEqualTo( testEmployees.size( ) ) ;
@@ -149,25 +147,21 @@ public class EmployeeApiTests {
 				.param( "pageNumber", "0" ) //
 
 				.contentType( "application/json" ) )
-				.andExpect( status( ).is4xxClientError( )) ;
+				.andExpect( status( ).is4xxClientError( ) ) ;
 
 		var content = resultActions.andReturn( ).getResponse( ).getContentAsString( ) ;
 
 		logger.info( Utils.buildDescription( "birthday report",
 				"urlPath", urlPath,
 				"content", content ) ) ;
-		
+
 		var pageReport = jsonMapper.readTree( content ) ;
-		
 
-		
-
-		assertThat( pageReport.path( "error" ).asBoolean( ))
+		assertThat( pageReport.path( "error" ).asBoolean( ) )
 				.isTrue( ) ;
 
-
-		assertThat( pageReport.path( "reason" ).asText( ))
-				.startsWith( "getBirthMonthEmployeesPageAble.pageSize: must be less than or equal to" );
+		assertThat( pageReport.path( "reason" ).asText( ) )
+				.startsWith( "getBirthMonthEmployeesPageAble.pageSize: must be less than or equal to" ) ;
 
 		assertThat( pageReport.path( "employees" ).size( ) )
 				.isEqualTo( 0 ) ;

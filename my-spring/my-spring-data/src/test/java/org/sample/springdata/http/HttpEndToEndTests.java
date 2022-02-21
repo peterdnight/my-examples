@@ -92,7 +92,7 @@ public class HttpEndToEndTests {
 
 		assertThat( applicationContext.getBeanDefinitionCount( ) )
 				.as( "limited beans loaded for @DataJpaTest" )
-				.isLessThan( 100 ) ;
+				.isGreaterThan( 300 ) ;
 
 	}
 
@@ -130,10 +130,18 @@ public class HttpEndToEndTests {
 
 		//
 		var errorReport = resultActions
-				.andExpect( status( ).isInternalServerError( ) )
+				.andExpect( status( ).is4xxClientError( ) )
 				.andReturn( ).getResponse( ).getContentAsString( ) ;
 
 		logger.info( "errorReport: {}", errorReport ) ;
+
+		var pageReport = jsonMapper.readTree( errorReport ) ;
+
+		assertThat( pageReport.path( "error" ).asBoolean( ) )
+				.isTrue( ) ;
+
+		assertThat( pageReport.path( "reason" ).asText( ) )
+				.startsWith( "getBirthMonthEmployeesPageAble.pageSize: must be less than or equal to" ) ;
 
 //		assertThat( errorReport )
 //				.contains( "peter" ) ;
@@ -194,8 +202,6 @@ public class HttpEndToEndTests {
 				.contains( "Null Pointer Exception Advice" ) ;
 
 	}
-	
-
 
 	@Test
 	public void verify_get_date ( @Autowired MockMvc mockMvc ) throws Exception {
@@ -206,10 +212,8 @@ public class HttpEndToEndTests {
 		var resultActions = mockMvc.perform( get( urlPath )
 				.contentType( "application/json" ) )
 				.andExpect( status( ).isOk( ) ) ;
-				
-		
-		var content = resultActions.andReturn( ).getResponse( ).getContentAsString( ) ; 
-		
+
+		var content = resultActions.andReturn( ).getResponse( ).getContentAsString( ) ;
 
 		logger.info( Utils.buildDescription( "date report",
 				"urlPath", urlPath,
