@@ -43,11 +43,11 @@ public class REST_Error_Handler {
 		if ( exception instanceof MethodArgumentNotValidException ) {
 
 			var methodArgError = (MethodArgumentNotValidException) exception ;
-			
+
 			methodArgError.getBindingResult( ).getAllErrors( ).forEach( ( error ) -> {
 
 				var fieldName = ( (FieldError) error ).getField( ) ;
-				
+
 				var itemReport = errorItems.addObject( ) ;
 				itemReport.put( "name", fieldName ) ;
 				itemReport.put( "message", error.getDefaultMessage( ) ) ;
@@ -59,7 +59,6 @@ public class REST_Error_Handler {
 			var methodArgError = (ConstraintViolationException) exception ;
 			methodArgError.getConstraintViolations( ).forEach( ( error ) -> {
 
-				
 				var itemReport = errorItems.addObject( ) ;
 				itemReport.put( "parameter", error.getPropertyPath( ).toString( ) ) ;
 				itemReport.put( "failedValue", error.getInvalidValue( ).toString( ) ) ;

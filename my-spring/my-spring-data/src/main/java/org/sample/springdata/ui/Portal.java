@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory ;
 import org.springframework.stereotype.Controller ;
 import org.springframework.ui.Model ;
 import org.springframework.web.bind.annotation.GetMapping ;
-import org.springframework.web.bind.annotation.RequestMapping ;
 
 @Controller
 public class Portal {
@@ -27,7 +26,6 @@ public class Portal {
 		return "employee-portal" ;
 
 	}
-	
 
 	//
 	//
@@ -49,8 +47,6 @@ public class Portal {
 		return "/malformed-example" ;
 
 	}
-	
-
 
 	@GetMapping ( "/missingTemplate" )
 	public String missingTempate ( Model springViewModel ) {
@@ -65,7 +61,6 @@ public class Portal {
 		return "/missingTemplate" ;
 
 	}
-	
 
 	@GetMapping ( "/testException" )
 	public String testException ( ) {

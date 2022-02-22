@@ -16,12 +16,9 @@ import org.sample.springdata.utils.Utils ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.beans.factory.annotation.Autowired ;
-import org.springframework.boot.autoconfigure.SpringBootApplication ;
-import org.springframework.boot.autoconfigure.domain.EntityScan ;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest ;
 import org.springframework.context.ApplicationContext ;
 import org.springframework.data.domain.PageRequest ;
-import org.springframework.data.domain.Pageable ;
 import org.springframework.data.domain.Sort ;
 import org.springframework.test.context.TestPropertySource ;
 
@@ -60,8 +57,8 @@ final class DataRepository {
 	void beforeAll ( ) {
 
 		logger.info( Utils.testHeader( "loading test data" ) ) ;
-		
-		Utils.setLogToInfo( StatisticalLoggingSessionEventListener.class.getName( ) );
+
+		Utils.setLogToInfo( StatisticalLoggingSessionEventListener.class.getName( ) ) ;
 
 		var testEmployees = IntStream.rangeClosed( 1, TEST_RECORD_COUNT )
 				.mapToObj( EmpHelpers::buildRandomizeEmployee )
@@ -70,7 +67,6 @@ final class DataRepository {
 		employeeRepository.saveAll( testEmployees ) ;
 
 	}
-
 
 	@Test
 	void contextLoads ( ) {
@@ -119,7 +115,7 @@ final class DataRepository {
 		var testMonth = EmpHelpers.TEST_MONTH ;
 
 		var pageAndSortSelector = PageRequest.of( 0, 10, Sort.by( "name" ) ) ;
-		//Pageable pageAndSortSelector = PageRequest.of(0, 10);
+		// Pageable pageAndSortSelector = PageRequest.of(0, 10);
 		var employeesPageable = employeeRepository.findAllByBirthMonth( testMonth, pageAndSortSelector ) ;
 
 		logger.info( Utils.buildDescription(

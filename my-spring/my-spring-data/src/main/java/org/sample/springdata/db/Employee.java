@@ -24,7 +24,7 @@ public class Employee {
 		this.name = name ;
 		this.age = age ;
 		this.birthDay = birthDay ;
-		
+
 		this.birthMonth = birthDay.getMonthValue( ) ;
 
 	}
@@ -90,15 +90,15 @@ public class Employee {
 	}
 
 	public Integer getBirthMonth ( ) {
-	
+
 		return birthMonth ;
-	
+
 	}
 
 	public void setBirthMonth ( Integer birthMonth ) {
-	
+
 		this.birthMonth = birthMonth ;
-	
+
 	}
 
 }

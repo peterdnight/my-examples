@@ -34,12 +34,12 @@ public class DataDemoApplication implements WebMvcConfigurer {
 	public void showSpringBootAutoConfigurations ( ) {
 
 		if ( dataSource == null ) {
-			
-			logger.info( "DataSource not configured" );
+
+			logger.info( "DataSource not configured" ) ;
 
 		} else {
 
-			logger.info( Utils.highlightHeader( "Datasource: spring.datasource.hikari.*" ) );
+			logger.info( Utils.highlightHeader( "Datasource: spring.datasource.hikari.*" ) ) ;
 
 			logger.info( Utils.buildDescription( "DB Settings: ",
 					"url", dataSource.getJdbcUrl( ),

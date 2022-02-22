@@ -153,13 +153,13 @@ public class Utils {
 
 	public static String testHeader ( ) {
 
-		var fullSourceClass = Thread.currentThread( ).getStackTrace( )[2].getClassName( ) ;
+		var fullSourceClass = Thread.currentThread( ).getStackTrace( )[ 2 ].getClassName( ) ;
 
 		var fullSourceClassArray = fullSourceClass.split( Pattern.quote( "." ) ) ;
 
 		var content = Utils.pad( "  Test:" )
-				+ fullSourceClassArray[fullSourceClassArray.length - 1] + "."
-				+ Thread.currentThread( ).getStackTrace( )[2].getMethodName( ) ;
+				+ fullSourceClassArray[ fullSourceClassArray.length - 1 ] + "."
+				+ Thread.currentThread( ).getStackTrace( )[ 2 ].getMethodName( ) ;
 
 		return header( arrowMessage( content ) ) ;
 
@@ -358,7 +358,7 @@ public class Utils {
 
 	public static String camelToSnake ( String camel ) {
 
-		var reallySimpleName = camel.split( Pattern.quote( "$" ), 2 )[0] ;
+		var reallySimpleName = camel.split( Pattern.quote( "$" ), 2 )[ 0 ] ;
 		reallySimpleName = reallySimpleName.replaceAll( "_", "-" ) ;
 		reallySimpleName = reallySimpleName.replaceAll( "/", "-" ) ;
 		Matcher camelMatcher = camelPattern.matcher( reallySimpleName ) ;
@@ -430,24 +430,24 @@ public class Utils {
 
 		switch ( maxUnit ) {
 
-			case MILLISECONDS :
-				maxDesc = "ms" ;
-				break ;
+		case MILLISECONDS:
+			maxDesc = "ms" ;
+			break ;
 
-			case SECONDS :
-				maxDesc = "s" ;
-				break ;
+		case SECONDS:
+			maxDesc = "s" ;
+			break ;
 
-			case MINUTES :
-				maxDesc = "m" ;
-				break ;
+		case MINUTES:
+			maxDesc = "m" ;
+			break ;
 
-			case HOURS :
-				maxDesc = "h" ;
-				break ;
+		case HOURS:
+			maxDesc = "h" ;
+			break ;
 
-			default:
-				break ;
+		default:
+			break ;
 
 		}
 
@@ -721,7 +721,7 @@ public class Utils {
 
 		}
 
-		logger.debug( "{}:\n {}", Thread.currentThread( ).getStackTrace( )[2].getMethodName( ), jsonPrint(
+		logger.debug( "{}:\n {}", Thread.currentThread( ).getStackTrace( )[ 2 ].getMethodName( ), jsonPrint(
 				jsonDetails ) ) ;
 
 		return jsonDetails ;
@@ -928,7 +928,7 @@ public class Utils {
 
 	}
 
-	public static  String buildRandomString ( int sizeOfArray , int charLimit ) {
+	public static String buildRandomString ( int sizeOfArray , int charLimit ) {
 
 		var randomLetters = IntStream.range( 0, sizeOfArray )
 				.map( iteration -> 'a' + ThreadLocalRandom.current( ).nextInt( 0, charLimit ) )
@@ -1016,13 +1016,12 @@ public class Utils {
 
 		}
 	}
-	
+
 	static public void addResourceHandlers ( ResourceHandlerRegistry registry ) {
-		
 
 		var versionForJsModules = LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( "HHmmss" ) ) ;
-		logger.info( "Module cache key updated: {}" , versionForJsModules );
-		
+		logger.info( "Module cache key updated: {}", versionForJsModules ) ;
+
 		VersionResourceResolver versionResolver = new VersionResourceResolver( )
 
 				//
@@ -1040,10 +1039,11 @@ public class Utils {
 		//
 
 		var oneYear = CacheControl.maxAge( 365, TimeUnit.DAYS ) ;
-		
 
 		if ( ! Utils.isCsapFolderSet( ) ) {
+
 			oneYear = CacheControl.maxAge( 1, TimeUnit.SECONDS ) ;
+
 		}
 
 		//
@@ -1081,8 +1081,6 @@ public class Utils {
 
 				// generate cache blowing strategy file-asdfasfsdfs.css
 				.resourceChain( true ).addResolver( versionResolver ) ;
-
-
 
 	}
 }

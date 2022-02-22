@@ -31,7 +31,6 @@ public class ApplicationConfiguration {
 
 		logger.info( Utils.testHeader( ) ) ;
 
-
 		logger.info( "beans: {}", applicationContext.getBeanDefinitionCount( ) ) ;
 
 		assertThat( applicationContext.getBeanDefinitionCount( ) )
