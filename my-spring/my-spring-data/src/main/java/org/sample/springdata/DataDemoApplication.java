@@ -39,7 +39,9 @@ public class DataDemoApplication implements WebMvcConfigurer {
 
 		} else {
 
-			logger.info( Utils.buildDescription( "DB Settings: spring.datasource.hikari.*",
+			logger.info( Utils.highlightHeader( "Datasource: spring.datasource.hikari.*" ) );
+
+			logger.info( Utils.buildDescription( "DB Settings: ",
 					"url", dataSource.getJdbcUrl( ),
 					"user", dataSource.getUsername( ),
 					"cred", dataSource.getPassword( ),

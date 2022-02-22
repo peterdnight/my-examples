@@ -29,3 +29,4 @@ reference implementation for [spring-data](https://docs.spring.io/spring-data/jp
   - full: @SpringBootTest
   - web: @WebMvcTest
   - data: @DataJpaTest
+  - pojo 

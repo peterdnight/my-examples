@@ -1021,7 +1021,7 @@ public class Utils {
 		
 
 		var versionForJsModules = LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( "HHmmss" ) ) ;
-		logger.info( Utils.highlightHeader( "Module cache key updated: {}" ), versionForJsModules );
+		logger.info( "Module cache key updated: {}" , versionForJsModules );
 		
 		VersionResourceResolver versionResolver = new VersionResourceResolver( )
 

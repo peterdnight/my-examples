@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 
 @WebMvcTest ( controllers = EmployeeRestApis.class )
 
-public class EmployeeApiTests {
+public class RestApisForEmployee {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
 

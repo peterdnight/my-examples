@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper ;
 
 @AutoConfigureMockMvc
 
-public class HttpEndToEndTests {
+public class Full_Application {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
 
