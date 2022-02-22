@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter ;
 import org.sample.springdata.utils.Utils ;
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
+import org.springframework.cache.annotation.CacheConfig ;
 import org.springframework.stereotype.Controller ;
 import org.springframework.ui.Model ;
 import org.springframework.web.bind.annotation.GetMapping ;
@@ -15,6 +16,7 @@ public class Portal {
 
 	Logger logger = LoggerFactory.getLogger( getClass( ) ) ;
 
+	
 	@GetMapping ( value = "/" )
 	public String get ( Model springViewModel )
 		throws Exception {
