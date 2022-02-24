@@ -19,8 +19,9 @@
 		<java.version>17</java.version>
 
 		<requirejsVersion>2.1.20</requirejsVersion>
-		<jqueryVersion>3.5.1</jqueryVersion>
+		<jqueryVersion>3.6.0</jqueryVersion>
 		<jqueryUiVersion>1.12.1</jqueryUiVersion>
+		<alertifyVersion>1.13.1</alertifyVersion>
 
 	</properties>
 
@@ -102,6 +103,16 @@
 			<artifactId>jquery-ui</artifactId>
 			<version>${jqueryUiVersion}</version>
 		</dependency>
+		
+	
+
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>alertifyjs</artifactId>
+		    <version>${alertifyVersion}</version>
+		</dependency>
+
+		
 
 
 

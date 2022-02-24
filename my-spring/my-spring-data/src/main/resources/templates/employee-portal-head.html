@@ -1,19 +1,35 @@
-<head>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+
+<head th:fragment="pageContent" th:remove="tag">
+
+
 <title>Spring Data Jpa Example</title>
 
-<!--
-    <script th:src="@{/js/simple.js}"></script>
-    -->
+
+
+<link th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" rel="stylesheet" type="text/css" media="screen" />
+
+
+<link th:href="@{ ${@mvcResourceUrlProvider.getForLookupPath('/webjars/alertifyjs/1.13.1/css/alertify.min.css')} }"
+	rel="stylesheet" type="text/css" media="screen" />
+<link th:href="@{ ${@mvcResourceUrlProvider.getForLookupPath('/webjars/alertifyjs/1.13.1/css/themes/semantic.min.css')} }"
+	rel="stylesheet" type="text/css" media="screen" />
+<link th:href="@{ ${@mvcResourceUrlProvider.getForLookupPath('/css/demo-alertify-theme.css')} }" rel="stylesheet"
+	type="text/css" media="screen" />
+	
+
+<link th:href="@{ ${@mvcResourceUrlProvider.getForLookupPath('/css/demo.css')} }" rel="stylesheet" type="text/css"
+	media="screen" />
+
+
 <style>
 
-article.content {
-	padding: 2em;
-}
 
 body table.csap {
 	width: 100%;
-	margin-bottom: 3em;
-	margin-top: 3em;
+	margin: 1.5em;
 }
 
 
@@ -25,32 +41,81 @@ table td:nth-child(2) {
 	width: 5em;
 }
 
-header .noteAlt {
-	font-size: 0.7em;
-	margin: 0;
-	padding: 3px;
-}
 
-div.title {
-	width: 20em;
-	color: black;
-}
 </style>
 
-<script th:inline="javaScript">
+<!-- 
+	  ===> Legacy
 
+<script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+<script th:src="@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/modules/alertifyjs/alertify.min.js')} }"></script>
+<script th:inline="javaScript" >	
 
-const BASE_URL = [[@{ / }]];
+const BASE_URL = /*[[ @{ / } ]]*/ 'url_resolved';
 
 </script>
 
-<script th:replace="~{ fragments/demo-includes :: pageContent }"></script>
-
 <script
-	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/spring-data-demo/modules/demo-main.js')} }"
+	th:attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/modules/legacy/legacy-main.js')} }"
 	th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
 
 
-	
+-->
 
+
+<!-- 
+	  ===> EC6
+
+-->
+	  
+
+ 
+<script th:inline="javaScript" type="module">	
+
+	const settings = {
+		
+		JQUERY_URL: /*[[ @{ /webjars/jquery/3.6.0/jquery.min.js } ]]*/ 'tbd',
+	 	BASE_URL: /*[[ @{ / } ]]*/ 'tbd',
+	 	JS_URL: /*[[ @{ /js } ]]*/ 'tbd',
+
+	}
+	
+	globalThis.settings = settings ;
+	
+	const DEMO_MAIN_URL = /*[[ @{ ${ @mvcResourceUrlProvider.getForLookupPath('/js/modules/demo-js6.js')} } ]]*/ 'tbd' ;
+	
+	// console.log (`DEMO_MAIN_URL: ${ DEMO_MAIN_URL }`) ;
+	
+	if ( false ) {
+	document.onreadystatechange = function() {
+		async function loadMain() {
+	
+			const main = await import( DEMO_MAIN_URL );
+			//const jq = await import("/webjars/jquery/3.6.0/jquery.min.js");
+	
+			main.loadApplication( ) ;
+	
+		}
+	
+		loadMain() ;
+	}
+	}
+
+
+</script> 
+
+
+<!-- 
+	  ===> EC6 module loading
+
+	<script type="module" th:src=" @{ ${ @mvcResourceUrlProvider.getForLookupPath('/js/modules/demo-rest.js')} }"></script>
+
+-->
+<script type="module" th:src=" @{ ${ @mvcResourceUrlProvider.getForLookupPath('/js/modules/demo-js6.js')} }"></script>
 </head>
+</html>
+
+
+
+
+	

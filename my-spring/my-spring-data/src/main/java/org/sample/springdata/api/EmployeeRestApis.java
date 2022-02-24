@@ -118,13 +118,13 @@ public class EmployeeRestApis {
 	}
 
 	@PostMapping ( "/test-data" )
-	public JsonNode addTestData ( @RequestParam ( defaultValue = "10" ) int number ) {
+	public JsonNode addTestData ( @RequestParam ( defaultValue = "8" ) int number ) {
 
 		var result = jsonMapper.createObjectNode( ) ;
 
 		logger.info( Utils.highlightHeader( "loading {} employees" ), number ) ;
 
-		result.put( "createTestIdResponse", number ) ;
+		result.put( "number-added", number ) ;
 
 		var testEmployees = IntStream.rangeClosed( 1, number )
 				.mapToObj( EmpHelpers::buildRandomizeEmployee )

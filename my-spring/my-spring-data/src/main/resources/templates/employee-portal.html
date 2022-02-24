@@ -4,7 +4,7 @@
 	xmlns:th="http://www.thymeleaf.org">
 
 
-<head th:replace="~{ employee-portal-head }"></head>
+<head th:replace="~{ employee-portal-head :: pageContent}"></head>
 
 <body class="csap-scrollable theme-dark theme-blue">
 
@@ -44,10 +44,27 @@
 
 				<tr>
 					<td>
+						<button id=show-value class=csap-button>show-value</button>
+							
+					</td>
+					<td>ui</td>
+					<td>
+						alert display
+
+					</td>
+				</tr>
+
+				<tr>
+					<td>
 						<a
 							id=employee-count-link
 							class="csap-link"
 							th:href="@{/employee/count}">employee count</a>
+							
+						<br>
+						
+						
+						
 							
 					</td>
 					<td>html</td>
