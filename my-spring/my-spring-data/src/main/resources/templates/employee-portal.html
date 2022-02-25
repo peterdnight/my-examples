@@ -140,7 +140,7 @@
 						<a id=show-all-birthdays-pageable
 						   class="csap-link"
 						   th:href="@{/birthdayEmployeesPageable}">birthdays: paginated</a>
-						   <br/>
+						<br />
 						<label class=csap-form>
 							<span>page size:</span>
 
@@ -162,10 +162,10 @@
 					<td>html</td>
 					<td>
 						birthdays in current month, with pagination to enable traversal of large data sets
-						<div class=csap-red >server side validation check
+						<div class=csap-red>server side validation check
 							<ol>
-								<li>handled: page size limit: 0 <= n <= 100  (json error handling)  </li>
-								<li>unhandled: page number < 0   (stack trace displayed) </li>
+								<li>handled: page size limit: 0 &lt;= n &lt;= 100 (json error handling) </li>
+								<li>unhandled: page number &lt; 0 (stack trace displayed) </li>
 
 							</ol>
 						</div>
