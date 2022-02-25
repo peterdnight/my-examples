@@ -111,7 +111,7 @@
 					<td>
 						<a id=show-all-employees
 						   class="csap-link"
-						   th:href="@{/employee/listing}">show all employees</a>
+						   th:href="@{/employee/listing}">show employees: all</a>
 
 					</td>
 					<td>html</td>
@@ -125,7 +125,7 @@
 					<td>
 						<a id=show-all-birthdays
 						   class="csap-link"
-						   th:href="@{/birthMonthEmployees}">show all birthdays in current month</a>
+						   th:href="@{/birthMonthEmployees}">show employees: birthdays</a>
 
 					</td>
 					<td>html</td>
@@ -137,6 +137,10 @@
 
 				<tr>
 					<td>
+						<a id=show-all-birthdays-pageable
+						   class="csap-link"
+						   th:href="@{/birthdayEmployeesPageable}">birthdays: paginated</a>
+						   <br/>
 						<label class=csap-form>
 							<span>page size:</span>
 
@@ -153,9 +157,6 @@
 						</label>
 
 
-						<a id=show-all-birthdays-pageable
-						   class="csap-link"
-						   th:href="@{/birthdayEmployeesPageable}">show paginated birthdays</a>
 
 					</td>
 					<td>html</td>
