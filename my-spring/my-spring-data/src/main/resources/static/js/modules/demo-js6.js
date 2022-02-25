@@ -1,38 +1,60 @@
+/**
+ * 
+ * @see 
+ * 
+ */
+
+import "./utils/all-utils.js";
+
+import dialogs from "./utils/dialog-utils.js";
+import utils from "./utils/app-utils.js";
+import dom from "./utils/dom-utils.js";
+import net from "./utils/net-utils.js";
+
+import subModule from "./sub-1.js";
 
 
-import "./my-globals.js";
-
-import utils from "./utilities.js";
-import subMod from "./sub-1.js";
-
-
-
-document.addEventListener( "DOMContentLoaded", function( event ) {
+function moduleLoader( event ) {
 
     console.log( `\n\n Waiting for doc ready, current: ${ document.readyState } \n\n` )
 
-    utils.configureCsapAlertify();
-    utils.labelTableRows( $( "table" ) )
+    // utils.configureCsapAlertify();
+    utils.prefixColumnEntryWithNumbers( $( "table" ) )
 
-    let appScope = new demo_application( globalThis.settings );
+    let appScope = new sample_demo( globalThis.settings );
+
+
     appScope.initialize();
 
-} );
+}
+
+document.addEventListener( "DOMContentLoaded", moduleLoader );
+
+if ( document.readyState == "complete" ) {
+    loadModule( null );
+}
+
+/**
+ * 
+ *  Simple application for demonstating latest features of es6
+ * 
+ * @param {*} mySettings 
+ * @returns 
+ */
+function sample_demo( mySettings ) {
 
 
-function demo_application ( mySettings ) {
+    const countEmployees_link = dom.findById( "employee-count-link" );
 
-    const $countEmployeesButton = $( "#employee-count-link" );
+    const count_input = dom.findById( "employee-count" );
 
-    const $countInput = $( "#employee-count" );
-
-    const $numberOfEmployeesToAdd = $( "#number-of-employees" );
+    const numberOfEmployees_select = dom.findById( "number-of-employees" );
 
     const settings = mySettings;
 
 
 
-    this.initialize = function() {
+    this.initialize = function () {
 
         console.log( `Build demo_application ` );
 
@@ -42,39 +64,51 @@ function demo_application ( mySettings ) {
 
     }
 
-    function registerEvents () {
-
-        console.log( `register ui events, $countEmployeesButton length: ${ $countEmployeesButton.length }` );
+    function registerEvents() {
 
 
+        console.log( `register ui events, $countEmployeesButton length: ${ countEmployees_link.length }` );
+        
+        dom.onClick( countEmployees_link, ( event ) => {
 
+            event.preventDefault();
+            console.log( `countEmployees_link.click: ` );
 
-        $countEmployeesButton.click( function( e ) {
+            //
+            // dynamic module load. versus: subModule.showValues() ;
+            //
+            // const newLocal = import( './sub-1.js' ).then( ( moduleDefinition ) => {
 
-            console.log( `countEmployeesButton.click: ` );
+            //     //console.log( `Sub_Interface: `, moduleDefinition );
+            //     moduleDefinition.default.showValues();
+            // } );
 
-            e.preventDefault();
+            //
+            // hit server for count data
+            //
+            const url = event.currentTarget.getAttribute( "href" );
+            net.httpGetJson( url, { demoParam: "peter" } )
 
-            subMod.showValues();
+                .then( jsonResponse => {
 
-            fetch( $( this ).attr( "href" ) )
-                .then( response => response.json() )
-                .then( data => {
-                    console.log( `got response: `, data );
-                    $countInput.val( data.count );
+                    console.log( jsonResponse );
+                    count_input.value = jsonResponse.count ;
+
                 } );
 
         } );
 
-        $numberOfEmployeesToAdd.change( function() {
 
-            let numberSelected = $numberOfEmployeesToAdd.val();
+        // $numberOfEmployeesToAdd.change( function () {
+        dom.onChange( numberOfEmployees_select, ( event ) => {
+
+            let numberSelected = numberOfEmployees_select.value;
 
             if ( numberSelected == 0 ) {
                 return;
             }
             // rest back to 0 to provide user feedback
-            $numberOfEmployeesToAdd.val( 0 );
+            numberOfEmployees_select.value = 0 ;
 
 
             let parameters = {
@@ -83,7 +117,7 @@ function demo_application ( mySettings ) {
 
             console.log( `parameters: `, parameters );
 
-            utils.httpPostForm(
+            net.httpPostForm(
                 settings.BASE_URL + "test-data",
 
                 {
@@ -92,35 +126,24 @@ function demo_application ( mySettings ) {
 
                 .then( jsonResponse => {
                     console.log( jsonResponse );
-                    alertify.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
-                    $countEmployeesButton.trigger( "click" );
+                    dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
+                    countEmployees_link.click();
                 } );
 
         } );
 
 
 
-        $( "#clear-db" ).click( function( e ) {
+        dom.onClick( dom.findById( "clear-db" ) ,  ( event ) => {
 
-            utils.httpDelete(
+            net.httpDelete(
                 settings.BASE_URL + "employees", null )
 
                 .then( jsonResponse => {
                     console.log( jsonResponse );
-                    alertify.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
-                    $countEmployeesButton.trigger( "click" );
+                    dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
+                    countEmployees_link.click();
                 } );
-
-            //			$.delete("/employees")
-            //				.done(function(commandResults) {
-            //
-            //					alertify.csapInfo(JSON.stringify(commandResults, null, "\t"));
-            //
-            //					$countEmployeesButton.trigger("click");
-            //				})
-            //				.fail(function(jqXHR, textStatus, errorThrown) {
-            //					alertify.csapWarning("Failed Operation: " + jqXHR.statusText + "Contact support");
-            //				});
 
         } );
 

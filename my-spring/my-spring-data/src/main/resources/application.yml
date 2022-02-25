@@ -6,12 +6,20 @@ spring:
 
   profiles:
   
-    active: my-dev 
+    active:  my-default,desktop
+    
 
 ---
 spring.config:
     activate:
-      on-profile: "my-dev"
+      on-profile: desktop
+          
+logging.config: classpath:log4j2-desktop.yml
+
+---
+spring.config:
+    activate:
+      on-profile: my-default
 
 #
 #  Servlet & Tomcat

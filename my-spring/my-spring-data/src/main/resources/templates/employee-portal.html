@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
 
 
 <head th:replace="~{ employee-portal-head :: pageContent}"></head>
@@ -12,9 +11,8 @@
 
 	<article class=content>
 
-		<table
-			id="SpringMvc"
-			class="csap">
+		<table id="SpringMvc"
+			   class="csap">
 			<thead>
 
 				<tr>
@@ -30,10 +28,9 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							th:href="@{/}">employee-portal</a>
-							
+						<a class="csap-link"
+						   th:href="@{/}">employee-portal</a>
+
 					</td>
 					<td>html</td>
 					<td>
@@ -44,8 +41,9 @@
 
 				<tr>
 					<td>
-						<button id=show-value class=csap-button>show-value</button>
-							
+						<button id=show-value
+								class=csap-button>show-value</button>
+
 					</td>
 					<td>ui</td>
 					<td>
@@ -56,27 +54,26 @@
 
 				<tr>
 					<td>
-						<a
-							id=employee-count-link
-							class="csap-link"
-							th:href="@{/employee/count}">employee count</a>
-							
+						<a id=employee-count-link
+						   class="csap-link"
+						   th:href="@{/employee/count}">employee count</a>
+
 						<br>
-						
-						
-						
-							
+
+
+
+
 					</td>
 					<td>html</td>
 					<td>
 						<div class=csap-blue>
-							<label class=csap-form-inline style="font-size: 2em">
+							<label class=csap-form-inline
+								   style="font-size: 2em">
 								<span>Total Employees in DB:</span>
-								
-								<input
-									id=employee-count
-									value="-1"/>
-				
+
+								<input id=employee-count
+									   value="-1" />
+
 							</label>
 						</div>
 
@@ -87,21 +84,24 @@
 					<td>
 						<label class=csap>
 							<select id=number-of-employees>
-								<option value="0" >Add Test Data ...</option>
+								<option value="0">Add Test Data ...</option>
 								<option>500</option>
 								<option>1000</option>
 								<option>5</option>
-							</select> 
+							</select>
 						</label>
-						<br/><br/>
+						<br /><br />
 						<label class=csap>
-							<button id=clear-db class=csap-button>Wipe All Data</button>
+							<button id=clear-db
+									class=csap-button>
+								Wipe All Data
+							</button>
 						</label>
-							
+
 					</td>
 					<td>html</td>
 					<td>
-					
+
 						add / remove test data
 
 					</td>
@@ -109,11 +109,10 @@
 
 				<tr>
 					<td>
-						<a
-							id=show-all-employees
-							class="csap-link"
-							th:href="@{/employee/listing}">show all employees</a>
-							
+						<a id=show-all-employees
+						   class="csap-link"
+						   th:href="@{/employee/listing}">show all employees</a>
+
 					</td>
 					<td>html</td>
 					<td>
@@ -124,11 +123,10 @@
 
 				<tr>
 					<td>
-						<a
-							id=show-all-birthdays
-							class="csap-link"
-							th:href="@{/birthMonthEmployees}">show all birthdays in current month</a>
-							
+						<a id=show-all-birthdays
+						   class="csap-link"
+						   th:href="@{/birthMonthEmployees}">show all birthdays in current month</a>
+
 					</td>
 					<td>html</td>
 					<td>
@@ -139,35 +137,32 @@
 
 				<tr>
 					<td>
-						<label class=csap-form >
+						<label class=csap-form>
 							<span>page size:</span>
-							
-							<input
-								id=page-size
-								value="5"/>
-			
+
+							<input id=page-size
+								   value="5" />
+
 						</label>
-						<label class=csap-form >
+						<label class=csap-form>
 							<span>page number:</span>
-							
-							<input
-								id=page-number
-								value="0"/>
-			
+
+							<input id=page-number
+								   value="0" />
+
 						</label>
-						
-						
-						<a
-							id=show-all-birthdays-pageable
-							class="csap-link"
-							th:href="@{/birthdayEmployeesPageable}">show paginated birthdays</a>
-							
+
+
+						<a id=show-all-birthdays-pageable
+						   class="csap-link"
+						   th:href="@{/birthdayEmployeesPageable}">show paginated birthdays</a>
+
 					</td>
 					<td>html</td>
 					<td>
 						birthdays in current month, with pagination to enable traversal of large data sets
 						<div class=csap-red>
-						server side validation check: page size limit is 100, anything else will be denied
+							server side validation check: page size limit is 100, anything else will be denied
 						</div>
 
 					</td>
@@ -178,11 +173,10 @@
 			</tbody>
 
 		</table>
-		
-		
-		<table
-			id="error cases"
-			class="csap">
+
+
+		<table id="error cases"
+			   class="csap">
 			<thead>
 
 				<tr>
@@ -198,13 +192,11 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							href="/date?pageSize=2">REST Parameter Passes</a>
-						<br/>	
-						<a
-							class="csap-link"
-							href="/date?pageSize=3">REST Parameter Fails</a>
+						<a class="csap-link"
+						   href="/date?pageSize=2">REST Parameter Passes</a>
+						<br />
+						<a class="csap-link"
+						   href="/date?pageSize=3">REST Parameter Fails</a>
 					</td>
 					<td>text</td>
 					<td>Parameter validation</td>
@@ -212,9 +204,8 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							href="testException">testException</a>
+						<a class="csap-link"
+						   href="testException">testException</a>
 					</td>
 					<td>text</td>
 					<td>Spring @RestController Exception Advice</td>
@@ -222,9 +213,8 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							href="testNullPointer">testNullPointer</a>
+						<a class="csap-link"
+						   href="testNullPointer">testNullPointer</a>
 					</td>
 					<td>text</td>
 					<td>Spring @Controller Null Pointer Exception Advice</td>
@@ -232,9 +222,8 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							href="missingTemplate">missingTemplate</a>
+						<a class="csap-link"
+						   href="missingTemplate">missingTemplate</a>
 					</td>
 					<td>text</td>
 					<td>Missing thymeleaf template</td>
@@ -242,9 +231,8 @@
 
 				<tr>
 					<td>
-						<a
-							class="csap-link"
-							href="malformedTemplate">malformedTemplate</a>
+						<a class="csap-link"
+						   href="malformedTemplate">malformedTemplate</a>
 					</td>
 					<td>text</td>
 					<td>malformedTemplate thymeleaf template. ALL elements must be terminated</td>
