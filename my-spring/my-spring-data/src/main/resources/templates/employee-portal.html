@@ -161,8 +161,12 @@
 					<td>html</td>
 					<td>
 						birthdays in current month, with pagination to enable traversal of large data sets
-						<div class=csap-red>
-							server side validation check: page size limit is 100, anything else will be denied
+						<div class=csap-red >server side validation check
+							<ol>
+								<li>handled: page size limit: 0 <= n <= 100  (json error handling)  </li>
+								<li>unhandled: page number < 0   (stack trace displayed) </li>
+
+							</ol>
 						</div>
 
 					</td>
@@ -247,6 +251,13 @@
 
 
 	</article>
+
+
+	<aside>
+		<div id="loading-project-message">
+			<div class=loading-message-large>Loading Application</div>
+		</div>
+	</aside>
 
 </body>
 
