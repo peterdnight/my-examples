@@ -1,40 +1,32 @@
-/**
- * 
- * @see 
- * 
- */
 
-import "./utils/all-utils.js";
 
-import dialogs from "./utils/dialog-utils.js";
-import utils from "./utils/app-utils.js";
-import dom from "./utils/dom-utils.js";
-import net from "./utils/net-utils.js";
-import legacyUtils from "./utils/legacy-utils.js";
+console.log( `loading imports` );
+
+
+import { _dialogs, _dom, _utils, _net } from "./utils/all-utils.js";
+
+
+// import _dialogs from "./utils/dialog-utils.js";
+// import _utils from "./utils/app-utils.js";
+// import _dom from "./utils/dom-utils.js";
+// import _net from "./utils/net-utils.js";
+import _legacyUtils from "./utils/legacy-utils.js";
 
 import subModule from "./sub-1.js";
 
 
-function moduleLoader( event ) {
+_dom.onReady( function () {
 
-    console.log( `\n\n Waiting for doc ready, current: ${ document.readyState } \n\n` )
-
-    // utils.configureCsapAlertify();
-    utils.prefixColumnEntryWithNumbers( $( "table" ) )
+    _utils.prefixColumnEntryWithNumbers( $( "table" ) )
 
     let appScope = new sample_demo( globalThis.settings );
 
-    legacyUtils.loading( "start up" );
+    _legacyUtils.loading( "start up" );
+    _legacyUtils.test = true ;
 
     appScope.initialize();
 
-}
-
-document.addEventListener( "DOMContentLoaded", moduleLoader );
-
-if ( document.readyState == "complete" ) {
-    loadModule( null );
-}
+} );
 
 /**
  * 
@@ -46,11 +38,11 @@ if ( document.readyState == "complete" ) {
 function sample_demo( mySettings ) {
 
 
-    const countEmployees_link = dom.findById( "employee-count-link" );
+    const countEmployees_link = _dom.findById( "employee-count-link" );
 
-    const count_input = dom.findById( "employee-count" );
+    const count_input = _dom.findById( "employee-count" );
 
-    const numberOfEmployees_select = dom.findById( "number-of-employees" );
+    const numberOfEmployees_select = _dom.findById( "number-of-employees" );
 
     const settings = mySettings;
 
@@ -58,7 +50,7 @@ function sample_demo( mySettings ) {
 
     this.initialize = function () {
 
-        console.log( `Build demo_application ` );
+        _dom.logSection( `initializing main ` );
 
         //$( 'header' ).text( 'Hi from jQuery!' );
 
@@ -74,7 +66,7 @@ function sample_demo( mySettings ) {
 
         console.log( `register ui events, $countEmployeesButton length: ${ countEmployees_link.length }` );
 
-        dom.onClick( countEmployees_link, ( event ) => {
+        _dom.onClick( countEmployees_link, ( event ) => {
 
             event.preventDefault();
             console.log( `countEmployees_link.click: ` );
@@ -92,10 +84,10 @@ function sample_demo( mySettings ) {
             // hit server for count data
             //
             const url = event.currentTarget.getAttribute( "href" );
-            net.httpGetJson( url, { demoParam: "peter" } )
+            _net.httpGetJson( url, { demoParam: "peter" } )
 
                 .then( jsonResponse => {
-                    legacyUtils.loadingComplete();
+                    _legacyUtils.loadingComplete();
 
                     console.log( jsonResponse );
                     count_input.value = jsonResponse.count;
@@ -106,9 +98,9 @@ function sample_demo( mySettings ) {
 
 
         // $numberOfEmployeesToAdd.change( function () {
-        dom.onChange( numberOfEmployees_select, ( event ) => {
+        _dom.onChange( numberOfEmployees_select, ( event ) => {
 
-            legacyUtils.loading( "Adding test employees" );
+            _legacyUtils.loading( "Adding test employees" );
 
             let numberSelected = numberOfEmployees_select.value;
 
@@ -125,7 +117,7 @@ function sample_demo( mySettings ) {
 
             console.log( `parameters: `, parameters );
 
-            net.httpPostForm(
+            _net.httpPostForm(
                 settings.BASE_URL + "test-data",
 
                 {
@@ -134,7 +126,7 @@ function sample_demo( mySettings ) {
 
                 .then( jsonResponse => {
                     console.log( jsonResponse );
-                    dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
+                    _dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
                     countEmployees_link.click();
                 } );
 
@@ -142,29 +134,29 @@ function sample_demo( mySettings ) {
 
 
 
-        dom.onClick( dom.findById( "clear-db" ), ( event ) => {
+        _dom.onClick( _dom.findById( "clear-db" ), ( event ) => {
 
-            legacyUtils.loading( "Deleting test employees" );
+            _legacyUtils.loading( "Deleting test employees" );
 
-            net.httpDelete(
+            _net.httpDelete(
                 settings.BASE_URL + "employees", null )
 
                 .then( jsonResponse => {
                     console.log( jsonResponse );
-                    dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
+                    _dialogs.csapInfo( JSON.stringify( jsonResponse, null, "\t" ) );
                     countEmployees_link.click();
                 } );
 
         } );
 
-        const employee_links = dom.findAllByCss( "#show-all-employees,#show-all-birthdays,#show-all-birthdays-pageable" );
+        const employee_links = _dom.findAllByCss( "#show-all-employees,#show-all-birthdays,#show-all-birthdays-pageable" );
 
         console.log( `employee_links: ${ employee_links.length }` );
 
 
         for ( let employee_link of employee_links ) {
 
-            dom.onClick( employee_link, ( event ) => {
+            _dom.onClick( employee_link, ( event ) => {
 
                 event.preventDefault();
 
@@ -173,27 +165,27 @@ function sample_demo( mySettings ) {
                 console.log( `url: ${ url }` );
 
 
-                legacyUtils.loading( "url: " + url );
+                _legacyUtils.loading( "url: " + url );
 
 
                 const parameters = {
-                    pageSize: dom.findById( "page-size" ).value,
-                    pageNumber: dom.findById( "page-number" ).value
+                    pageSize: _dom.findById( "page-size" ).value,
+                    pageNumber: _dom.findById( "page-number" ).value
                 };
 
-                net.httpGetJson( url, parameters )
+                _net.httpGetJson( url, parameters )
 
                     .then( jsonResponse => {
 
-                        legacyUtils.loadingComplete();
+                        _legacyUtils.loadingComplete();
 
                         console.log( `url: ${ url }`, jsonResponse );
 
-                        let responseFunction = dialogs.csapInfo;
+                        let responseFunction = _dialogs.csapInfo;
 
                         if ( jsonResponse.error ) {
 
-                            responseFunction = dialogs.csapWarning ;
+                            responseFunction = _dialogs.csapWarning;
 
                         }
 

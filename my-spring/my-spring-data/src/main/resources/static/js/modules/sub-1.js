@@ -1,47 +1,41 @@
 
 
-import dialogs from "./utils/dialog-utils.js";
-import utils from "./utils/app-utils.js";
-import dom from "./utils/dom-utils.js";
-// import net from "./utils/net-utils.js";
+console.log(`loading imports`) ;
 
-console.log( "\n\n loading module sub-1 ... \n\n" );   
+import { _dialogs, _dom } from "./utils/all-utils.js";
+
+// import _dialogs from "./utils/dialog-utils.js";
+// import _utils from "./utils/app-utils.js";
+// import _dom from "./utils/dom-utils.js";
+// import _net from "./utils/net-utils.js";
 
 
-let appScope ;
+let appScope;
 
 class Sub_Interface {
-	
-	static showValues() {
-		
-		appScope.showValues() ;
-		
-	} 
-	
-	
+
+    static showValues() {
+
+        appScope.showValues();
+
+    }
+
+
 }
- export default Sub_Interface;
+export default Sub_Interface;
 
-console.log( `\n\n Waiting for doc ready, current: ${ document.readyState } \n\n` )
-document.addEventListener( "DOMContentLoaded", loadModule );
-function loadModule( event ) {
 
+_dom.onReady( function () {
 
     appScope = new sub_demo_module( globalThis.settings );
     appScope.initialize();
 
-}
-
-if ( document.readyState  == "complete" ) {
-    loadModule( null ) ;
-}
+} );
 
 
+function sub_demo_module() {
 
-
-function sub_demo_module () {
-
-    const _showValueButton = dom.findById( 'show-value' );
+    const _showValueButton = _dom.findById( 'show-value' );
 
 
     let counterVariable = 1;
@@ -49,39 +43,39 @@ function sub_demo_module () {
 
 
 
-    this.initialize = function() {
+    this.initialize = function () {
 
-        console.log( `initialization ` );
+        _dom.logHead( `binding button actions` );
 
         //$( 'header' ).text( 'Hi from jQuery!' );
 
         registerEvents();
 
     }
-    
-    
 
-    function registerEvents () {
 
-        async function showValuesUsingUtils (  ) {
+
+    function registerEvents() {
+
+        async function showValuesUsingUtils() {
             showValues();
         }
         //_showValueButton.addEventListener( 'click', showValuesUsingUtils );
 
         // utils.onClick( _showValueButton,  (showValuesUsingUtils) ) ; 
-        dom.onClick( _showValueButton,  () => { showValues() } ) ; 
+        _dom.onClick( _showValueButton, () => { showValues() } );
 
     }
 
-    function showValues () {
+    function showValues() {
 
-		counterVariable++ ;
-		
+        counterVariable++;
+
         console.log( `showValues: counterVariable ${ counterVariable }` );
 
-        dialogs.csapInfo( ` Hi from module sub-1, times invoked: ${ counterVariable }` );
+        _dialogs.csapInfo( ` Hi from module sub-1, times invoked: ${ counterVariable }` );
     }
-    
-    this.showValues = showValues ;
+
+    this.showValues = showValues;
 }
 

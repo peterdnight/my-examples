@@ -1,11 +1,14 @@
 
+
+import _dom from "./dom-utils.js";
+
 const LegacyUtils = legacy( ) ;
 
 export default LegacyUtils
 
 function legacy() {
 
-    console.log( "Module loaded utils 1" ) ;
+    _dom.logHead( "loaded legacy utils" ) ;
     const $browser = $( "body#manager" ) ;
     const $betweenHeaderAndFooter = $( ">section", $browser ) ;
     const $uiTemplates = $( ">aside", $browser ) ;
@@ -1444,6 +1447,10 @@ function legacy() {
 
     function launch( theUrl, frameTarget = "_blank" ) {
         openWindowSafely( theUrl, frameTarget ) ;
+    }
+
+    function privateHi() {
+        console.log(`privateHi`) ;
     }
 
 } 

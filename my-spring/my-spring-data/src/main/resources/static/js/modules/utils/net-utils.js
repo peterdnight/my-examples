@@ -3,6 +3,7 @@ export default function NetUtils() {
 }
 
 
+
 NetUtils.httpGetJson = async function ( urlString = '', parameters = {} ) {
 
     let url = urlString;
