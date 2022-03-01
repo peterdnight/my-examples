@@ -20,7 +20,7 @@
 
 		<requirejsVersion>2.1.20</requirejsVersion>
 		<jqueryVersion>3.6.0</jqueryVersion>
-		<jqueryUiVersion>1.12.1</jqueryUiVersion>
+		<jqueryUiVersion>1.13.0</jqueryUiVersion>
 		<alertifyVersion>1.13.1</alertifyVersion>
 
 	</properties>
