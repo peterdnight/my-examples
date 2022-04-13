@@ -33,6 +33,7 @@ brew install --cask springtoolsuite
 
 docker run \
 	--rm \
+	--detach \
 	--name csap-demo \
 	--publish 9011:9011 --publish 9013:9013 --publish 9021:9021  --publish 9023:9023 \
 	--env dockerHostFqdn=$(hostname -f) \
