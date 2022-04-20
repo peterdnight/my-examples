@@ -28,6 +28,8 @@ brew install openjdk@17
 sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 
 brew install --cask springtoolsuite
+brew install --cask visual-studio-code
+
 ****
 
 #
