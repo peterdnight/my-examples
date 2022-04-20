@@ -20,12 +20,15 @@ brew install wget
 
 brew install --cask sublime-text
 
+brew install alt-tab
+brew install telnet
+
 
 brew install openjdk@17
 sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 
 brew install --cask springtoolsuite
-
+****
 
 #
 # csap demo
