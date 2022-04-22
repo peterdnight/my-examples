@@ -16,6 +16,9 @@ sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools
 
 brew install bash
 
+# gcp, g... , to use unprefixed: export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+brew install coreutils
+
 brew install wget
 
 brew install --cask sublime-text
@@ -29,6 +32,11 @@ sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVir
 
 brew install --cask springtoolsuite
 brew install --cask visual-studio-code
+
+#
+# in case  do not have permission to sts
+#
+codesign --force --deep --sign - /Applications/SpringToolSuite4.app
 
 ****
 
