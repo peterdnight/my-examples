@@ -1,7 +1,7 @@
 
 ```
 #
-# install packages
+# install packages: test
 #
 
 #
